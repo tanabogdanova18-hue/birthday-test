@@ -192,19 +192,19 @@
                 resultDiv.innerHTML = `🎂 С Днем Рождения! Вы прошли тест! 🎂<br><br>Правильных ответов: ${correctAnswers} из ${totalQuestions}<br>Но мы любим вас в любом случае! ❤️`;
                 resultDiv.scrollIntoView({ behavior: 'smooth' });
 
-                // 2. Через 3 секунды показываем "НЕ ВЫКЛЮЧАЙТЕСЬ!"
+                // 2. Через 1 секунды показываем "НЕ ВЫКЛЮЧАЙТЕСЬ!"
                 setTimeout(() => {
                     let warningDiv = document.getElementById('warningText');
                     warningDiv.style.display = 'block';
                     warningDiv.scrollIntoView({ behavior: 'smooth' });
 
-                    // 3. Ещё через 3 секунды показываем "Вспомним былое"
+                    // 3. Ещё через 1 секунды показываем "Вспомним былое"
                     setTimeout(() => {
                         let memoryDiv = document.getElementById('memoryText');
                         memoryDiv.style.display = 'block';
                         memoryDiv.scrollIntoView({ behavior: 'smooth' });
 
-                        // 4. И ещё через 3 секунды запускаем видео
+                        // 4. И ещё через 2 секунды запускаем видео
                         setTimeout(() => {
                             let videoContainer = document.getElementById('videoContainer');
                             videoContainer.style.display = 'block';

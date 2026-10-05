@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест на День Рождения 🎂</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #fdf2f2; color: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #fdf2f2; color: #333; position: relative; }
         h1 { text-align: center; color: #d32f2f; font-size: 28px; margin-bottom: 30px; }
         .question { margin-bottom: 25px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         h3 { color: #c62828; margin-top: 0; font-size: 18px; }
@@ -18,6 +18,7 @@
         .memory-text { text-align: center; font-size: 28px; color: #c62828; margin-top: 30px; padding: 25px; background: white; border-radius: 15px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-weight: bold; font-style: italic; animation: fadeIn 1s ease-in; }
         .video-container { text-align: center; margin-top: 30px; display: none; }
         .video-container video, .video-container iframe { width: 100%; max-width: 560px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -29,6 +30,8 @@
     </style>
 </head>
 <body>
+    <canvas id="confetti-canvas"></canvas>
+    
     <h1>🎉 Тест для именинника! 🎉</h1>
 
     <div class="question">
@@ -152,17 +155,78 @@
     </div>
 
     <div class="result" id="finalResult"></div>
-    <div class="warning" id="warningText">⚠️ НЕ ВЫКЛЮЧАЙТЕСЬ! ⚠️</div>
+    <div class="warning" id="warningText">⚠️ НЕ ВЫКЛЮЧАЙТЕСЬ! ️</div>
     <div class="memory-text" id="memoryText">✨ Вспомним былое... ✨</div>
     <div class="video-container" id="videoContainer">
-    <!-- Вставьте сюда ваше видео -->
         <video id="birthdayVideo" controls autoplay playsinline>
-        <source src="мое-видео.mp4" type="video/mp4">
-        Ваш браузер не поддерживает видео.
-    </video>
-</div>
+            <source src="ваше_видео.mp4" type="video/mp4">
+            Ваш браузер не поддерживает воспроизведение видео.
+        </video>
+    </div>
 
- <script>
+    <script>
+        // Анимация серпантина
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const confetti = [];
+        const colors = ['#d32f2f', '#c62828', '#f44336', '#ff5722', '#ff9800', '#ffc107', '#ffeb3b'];
+        let animationId;
+
+        function createConfetti() {
+            return {
+                x: Math.random() * canvas.width,
+                y: -10,
+                width: Math.random() * 10 + 5,
+                height: Math.random() * 20 + 10,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speed: Math.random() * 3 + 2,
+                angle: Math.random() * 360,
+                spin: Math.random() * 0.2 - 0.1
+            };
+        }
+
+        function drawConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            confetti.forEach((piece, index) => {
+                ctx.save();
+                ctx.translate(piece.x, piece.y);
+                ctx.rotate(piece.angle * Math.PI / 180);
+                ctx.fillStyle = piece.color;
+                ctx.fillRect(-piece.width / 2, -piece.height / 2, piece.width, piece.height);
+                ctx.restore();
+
+                piece.y += piece.speed;
+                piece.angle += piece.spin;
+
+                if (piece.y > canvas.height) {
+                    confetti.splice(index, 1);
+                }
+            });
+
+            if (confetti.length < 50) {
+                confetti.push(createConfetti());
+            }
+
+            animationId = requestAnimationFrame(drawConfetti);
+        }
+
+        function stopConfetti() {
+            cancelAnimationFrame(animationId);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        drawConfetti();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Тест
         let correctAnswers = 0;
         let totalQuestions = document.querySelectorAll('.question').length;
         let answeredQuestions = 0;
@@ -186,31 +250,29 @@
 
             answeredQuestions++;
             if (answeredQuestions === totalQuestions) {
-                // 1. Сначала показываем результат
+                // Останавливаем серпантин
+                stopConfetti();
+
                 let resultDiv = document.getElementById('finalResult');
                 resultDiv.style.display = 'block';
                 resultDiv.innerHTML = `🎂 С Днем Рождения! Вы прошли тест! 🎂<br><br>Правильных ответов: ${correctAnswers} из ${totalQuestions}<br>Но мы любим вас в любом случае! ❤️`;
                 resultDiv.scrollIntoView({ behavior: 'smooth' });
 
-                // 2. Через 1 секунды показываем "НЕ ВЫКЛЮЧАЙТЕСЬ!"
                 setTimeout(() => {
                     let warningDiv = document.getElementById('warningText');
                     warningDiv.style.display = 'block';
                     warningDiv.scrollIntoView({ behavior: 'smooth' });
 
-                    // 3. Ещё через 1 секунды показываем "Вспомним былое"
                     setTimeout(() => {
                         let memoryDiv = document.getElementById('memoryText');
                         memoryDiv.style.display = 'block';
                         memoryDiv.scrollIntoView({ behavior: 'smooth' });
 
-                        // 4. И ещё через 2 секунды запускаем видео
                         setTimeout(() => {
                             let videoContainer = document.getElementById('videoContainer');
                             videoContainer.style.display = 'block';
                             videoContainer.scrollIntoView({ behavior: 'smooth' });
                             
-                            // Автоматическое воспроизведение видео
                             let video = document.getElementById('birthdayVideo');
                             if (video) {
                                 video.play();
@@ -221,3 +283,5 @@
             }
         }
     </script>
+</body>
+</html>

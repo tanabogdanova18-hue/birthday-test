@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест на День Рождения 🎂</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #fdf2f2; color: #333; }
+        h1 { text-align: center; color: #d32f2f; font-size: 28px; margin-bottom: 30px; }
+        .question { margin-bottom: 25px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h3 { color: #c62828; margin-top: 0; font-size: 18px; }
+        button { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 10px; background: #fff; font-size: 16px; cursor: pointer; transition: 0.2s; text-align: left; }
+        button:hover { background: #f9f9f9; border-color: #ccc; }
+        .correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+        .wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        .result { text-align: center; font-size: 24px; color: #d32f2f; margin-top: 30px; padding: 20px; background: white; border-radius: 15px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .warning { text-align: center; font-size: 32px; color: #d32f2f; margin-top: 30px; padding: 30px; background: white; border-radius: 15px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-weight: bold; animation: pulse 1s infinite; }
+        .memory-text { text-align: center; font-size: 28px; color: #c62828; margin-top: 30px; padding: 25px; background: white; border-radius: 15px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-weight: bold; font-style: italic; animation: fadeIn 1s ease-in; }
+        .video-container { text-align: center; margin-top: 30px; display: none; }
+        .video-container video, .video-container iframe { width: 100%; max-width: 560px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎉 Тест для именинника! 🎉</h1>
+
+    <div class="question">
+        <h3>1. Благодаря чему наша группа всё-таки получила дипломы?</h3>
+        <button onclick="checkAnswer(this, false)">А) Мы заключили сделку с Олечкой Юрьевной за шоколадку</button>
+        <button onclick="checkAnswer(this, false)">Б) Это была симуляция, и мы до сих пор сидим на парах</button>
+        <button onclick="checkAnswer(this, true)">В) Нервная система нашего куратора сделана из титана и волшебства</button>
+        <button onclick="checkAnswer(this, false)">Г) Мы просто очень красиво просили</button>
+    </div>
+
+    <div class="question">
+        <h3>2. Какая Ваша фраза стала нашим негласным гимном?</h3>
+        <button onclick="checkAnswer(this, false)">А) Заставлять куратора стареть в "собачьих" годах</button>
+        <button onclick="checkAnswer(this, true)">Б) Умение задавать один и тот же вопрос 5 раз</button>
+        <button onclick="checkAnswer(this, false)">В) Массовая амнезия в день сдачи курсовой</button>
+        <button onclick="checkAnswer(this, false)">Г) Превращать 1 чашку кофе в 3 часа паники</button>
+    </div>
+
+    <div class="question">
+        <h3>3. Какова была наша главная суперсила как курса?</h3>
+        <button onclick="checkAnswer(this, false)">А) «Я выйду на 2 минуты»</button>
+        <button onclick="checkAnswer(this, false)">Б) «Вы это серьёзно сейчас?»</button>
+        <button onclick="checkAnswer(this, false)">В) «В моё время студенты сами знали дедлайны»</button>
+        <button onclick="checkAnswer(this, true)">Г) «Оооо, вы всё-таки пришли»</button>
+    </div>
+
+    <div class="question">
+        <h3>4. Как на самом деле называлась Ваша должность на нашем курсе?</h3>
+        <button onclick="checkAnswer(this, false)">А) Куратор курса</button>
+        <button onclick="checkAnswer(this, false)">Б) Человек, который знает о нас слишком много</button>
+        <button onclick="checkAnswer(this, true)">В) Главный менеджер по укрощению хаоса</button>
+        <button onclick="checkAnswer(this, false)">Г) Профессиональный продлеватель дедлайнов</button>
+    </div>
+
+    <div class="question">
+        <h3>5. Что Александр Дмитриевич видит в своих самых сладких снах?</h3>
+        <button onclick="checkAnswer(this, false)">А) Студентов, которые сдают всё с первого раза и без слёз</button>
+        <button onclick="checkAnswer(this, false)">Б) Мир, где не существует слова «пересдача»</button>
+        <button onclick="checkAnswer(this, false)">В) Пятницу, 10:00, и выключенный телефон</button>
+        <button onclick="checkAnswer(this, true)">Г) Всё вышеперечисленное + наш курс</button>
+    </div>
+
+    <div class="question">
+        <h3>6. Самый травмирующий момент за всё время нашей учёбы у вас — это...</h3>
+        <button onclick="checkAnswer(this, false)">А) Пары в 8:30 утра</button>
+        <button onclick="checkAnswer(this, false)">Б) Когда Ольга Юрьевна приходила на нас жаловаться</button>
+        <button onclick="checkAnswer(this, false)">В) Момент, когда Вы поняли, что мы выпускаемся</button>
+        <button onclick="checkAnswer(this, true)">Г) Осознание, что после колледжа мы не появимся в его стенах</button>
+    </div>
+
+    <div class="question">
+        <h3>7. Теперь, когда мы в разных городах и официально взрослые, каков наш статус для вас?</h3>
+        <button onclick="checkAnswer(this, false)">А) Бывшие студенты, которые иногда пишут</button>
+        <button onclick="checkAnswer(this, false)">Б) Ваши личные агенты по созданию поводов для улыбки</button>
+        <button onclick="checkAnswer(this, false)">В) Группа поддержки</button>
+        <button onclick="checkAnswer(this, true)">Г) Все варианты верны</button>
+    </div>
+
+    <div class="question">
+        <h3>8. Чего мы желаем нашему любимому куратору?</h3>
+        <button onclick="checkAnswer(this, false)">А) Студентов, которые читают конспекты ДО того, как задать вопрос</button>
+        <button onclick="checkAnswer(this, true)">Б) Всего этого и нашей бесконечной дружеской любви!</button>
+        <button onclick="checkAnswer(this, false)">В) Бесконечного запаса кофе и выходных без рабочих чатов</button>
+        <button onclick="checkAnswer(this, false)">Г) Орден «За освобождение курса» 1-й степени</button>
+    </div>
+
+    <div class="question">
+        <h3>9. Честно признавайтесь, как часто вы вспоминаете наш курс?</h3>
+        <button onclick="checkAnswer(this, true)">А) С теплой улыбкой, ведь скучаю по этому хаосу!</button>
+        <button onclick="checkAnswer(this, false)">Б) Каждый раз, когда вижу слово «дедлайн» (и вздрагиваю)</button>
+        <button onclick="checkAnswer(this, false)">В) Только когда пью очень крепкий кофе по утрам</button>
+        <button onclick="checkAnswer(this, false)">Г) Я надежно заблокировал эти воспоминания в дальнем углу мозга</button>
+    </div>
+
+    <div class="question">
+        <h3>10. Ваш идеальный сценарий празднования Дня Рождения прямо сейчас:</h3>
+        <button onclick="checkAnswer(this, false)">А) Тишина, уютный плед, сериал и телефон в авиарежиме</button>
+        <button onclick="checkAnswer(this, false)">Б) Вечеринка, на которой нет ни одного студента с вопросами «а как это делать?»</button>
+        <button onclick="checkAnswer(this, true)">В) Внезапный звонок от нашей группы с громкими поздравлениями</button>
+        <button onclick="checkAnswer(this, false)">Г) Путешествие туда, где не ловит интернет</button>
+    </div>
+
+    <div class="question">
+        <h3>11. Если бы вам дали одну суперспособность на сегодня, что бы вы выбрали?</h3>
+        <button onclick="checkAnswer(this, false)">А) Читать мысли (чтобы знать, кто из студентов реально болел, а кто спал)</button>
+        <button onclick="checkAnswer(this, false)">Б) Останавливать время (чтобы продлить выходные или сон)</button>
+        <button onclick="checkAnswer(this, false)">В) Заставлять любые дедлайны исчезать щелчком пальцев</button>
+        <button onclick="checkAnswer(this, true)">Г) Мгновенно телепортироваться к нам в города на чашку кофе</button>
+    </div>
+
+    <div class="question">
+        <h3>12. Что вы чувствуете, когда видите новое сообщение от кого-то из нашей группы?</h3>
+        <button onclick="checkAnswer(this, false)">А) «О нет, они опять что-то забыли, потеряли или не так поняли»</button>
+        <button onclick="checkAnswer(this, false)">Б) «Надеюсь, это просто поздравление, а не просьба написать рекомендательное письмо»</button>
+        <button onclick="checkAnswer(this, false)">В) Спортивный интерес: чем же они меня удивят на этот раз?</button>
+        <button onclick="checkAnswer(this, true)">Г) Искреннюю радость! Мои любимые люди на связи</button>
+    </div>
+
+    <div class="question">
+        <h3>13. Ваш главный жизненный девиз после того, как мы наконец выпустились:</h3>
+        <button onclick="checkAnswer(this, false)">А) «Всё, что не убивает, делает меня сильнее (и немного седее)»</button>
+        <button onclick="checkAnswer(this, true)">Б) «Я выжил с ними, теперь мне всё по плечу!»</button>
+        <button onclick="checkAnswer(this, false)">В) «Кофе — это не напиток, это мой основной источник энергии»</button>
+        <button onclick="checkAnswer(this, false)">Г) «Никогда не говори "никогда", особенно студентам»</button>
+    </div>
+
+    <div class="question">
+        <h3>14. Блиц! Если бы вы могли прямо сейчас получить один подарок, что бы это было?</h3>
+        <button onclick="checkAnswer(this, true)">А) Гарантия, что все мы станем успешными и будем вас вечно благодарить</button>
+        <button onclick="checkAnswer(this, false)">Б) Недельный оплачиваемый отпуск на море</button>
+        <button onclick="checkAnswer(this, false)">В) Волшебную кнопку «Сделать всю бумажную работу за меня»</button>
+        <button onclick="checkAnswer(this, false)">Г) Бесконечный запас любимой еды</button>
+    </div>
+
+    <div class="question">
+        <h3>15. (Финальный) Насколько сильно вы любите нашу группу по шкале от 1 до 10?</h3>
+        <button onclick="checkAnswer(this, false)">А) Все варианты абсолютно верны!</button>
+        <button onclick="checkAnswer(this, false)">Б) 100 из 10, и я готов подтвердить это документально</button>
+        <button onclick="checkAnswer(this, false)">В) 11 из 10, потому что вы вышли за пределы шкалы</button>
+        <button onclick="checkAnswer(this, true)">Г) 10 из 10, вы мои маленькие (уже взрослые) победы</button>
+    </div>
+
+    <div class="result" id="finalResult"></div>
+    <div class="warning" id="warningText">⚠️ НЕ ВЫКЛЮЧАЙТЕСЬ! ⚠️</div>
+    <div class="memory-text" id="memoryText">✨ Вспомним былое... ✨</div>
+    <div class="video-container" id="videoContainer">
+    <!-- Вставьте сюда ваше видео -->
+        <video id="birthdayVideo" controls autoplay playsinline>
+        <source src="мое-видео.mp4" type="video/mp4">
+        Ваш браузер не поддерживает видео.
+    </video>
+</div>
+
+ <script>
+        let correctAnswers = 0;
+        let totalQuestions = document.querySelectorAll('.question').length;
+        let answeredQuestions = 0;
+
+        function checkAnswer(button, isCorrect) {
+            let parent = button.parentElement;
+            let buttons = parent.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                button.classList.add('correct');
+                correctAnswers++;
+            } else {
+                button.classList.add('wrong');
+                buttons.forEach(btn => {
+                    if (btn.getAttribute('onclick').includes('true')) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            answeredQuestions++;
+            if (answeredQuestions === totalQuestions) {
+                // 1. Сначала показываем результат
+                let resultDiv = document.getElementById('finalResult');
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `🎂 С Днем Рождения! Вы прошли тест! 🎂<br><br>Правильных ответов: ${correctAnswers} из ${totalQuestions}<br>Но мы любим вас в любом случае! ❤️`;
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+
+                // 2. Через 1 секунды показываем "НЕ ВЫКЛЮЧАЙТЕСЬ!"
+                setTimeout(() => {
+                    let warningDiv = document.getElementById('warningText');
+                    warningDiv.style.display = 'block';
+                    warningDiv.scrollIntoView({ behavior: 'smooth' });
+
+                    // 3. Ещё через 1 секунды показываем "Вспомним былое"
+                    setTimeout(() => {
+                        let memoryDiv = document.getElementById('memoryText');
+                        memoryDiv.style.display = 'block';
+                        memoryDiv.scrollIntoView({ behavior: 'smooth' });
+
+                        // 4. И ещё через 2 секунды запускаем видео
+                        setTimeout(() => {
+                            let videoContainer = document.getElementById('videoContainer');
+                            videoContainer.style.display = 'block';
+                            videoContainer.scrollIntoView({ behavior: 'smooth' });
+                            
+                            // Автоматическое воспроизведение видео
+                            let video = document.getElementById('birthdayVideo');
+                            if (video) {
+                                video.play();
+                            }
+                        }, 3000);
+                    }, 3000);
+                }, 3000);
+            }
+        }
+    </script>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест на День Рождения 🎂</title>
     <style>
+        html { scroll-behavior: smooth; }
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             max-width: 600px; margin: 0 auto; padding: 20px; 
@@ -34,146 +35,118 @@
         .result { text-align: center; font-size: 24px; color: #d32f2f; margin-top: 30px; padding: 20px; background: white; border-radius: 15px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; z-index: 2; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* --- ОТДЕЛЬНЫЕ БЛОКИ (ЧТОБЫ НЕ БЫЛО ЗМЕЙКИ) --- */
+        .stage-block {
+            display: none;
+            margin: 30px auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeIn 0.8s ease;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            border: 2px solid #ffebee;
+        }
 
         .action-btn {
-            display: none; width: 80%; margin: 30px auto; padding: 18px; font-size: 18px; font-weight: bold;
+            display: none; width: 80%; margin: 20px auto; padding: 18px; font-size: 18px; font-weight: bold;
             color: white; background: linear-gradient(135deg, #d32f2f, #c62828); border: none; border-radius: 50px;
             cursor: pointer; box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4); transition: transform 0.2s;
             position: relative; z-index: 2;
         }
         .action-btn:hover { transform: scale(1.05); }
 
-        .diploma-container { display: none; margin: 30px auto; text-align: center; animation: fadeIn 1s ease; position: relative; z-index: 2; }
         .diploma-container img { max-width: 100%; border-radius: 15px; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4); border: 3px solid #d4af37; }
 
-        /* --- СТИЛИ ДЛЯ АУДИО --- */
-        .audio-section { display: none; margin: 30px 0; text-align: center; animation: fadeIn 0.5s ease; position: relative; z-index: 2; }
-        
+        /* --- АУДИО БЛОКИ --- */
         .audio-card {
             padding: 30px 20px 20px 20px;
             border-radius: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             position: relative;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease;
         }
-        .audio-card:hover { transform: translateY(-3px); }
-
         .audio-card.funny {
             background: linear-gradient(135deg, #fffdf5 0%, #fff8e1 100%);
             border: 3px dashed #ffb74d;
-            box-shadow: 0 8px 20px rgba(255, 183, 77, 0.25);
         }
         .audio-card.funny::before {
-            content: '🎭';
-            position: absolute;
-            top: -18px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 32px;
-            background: white;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            content: '🎭'; position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+            font-size: 32px; background: white; border-radius: 50%; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-
         .audio-card.serious {
             background: linear-gradient(135deg, #ffffff 0%, #ffebee 100%);
             border: 2px solid #ef9a9a;
-            box-shadow: 0 8px 20px rgba(239, 154, 154, 0.3);
         }
         .audio-card.serious::before {
-            content: '❤️';
-            position: absolute;
-            top: -18px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 28px;
-            background: white;
-            border-radius: 50%;
-            width: 40px; 
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            content: '❤️'; position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+            font-size: 28px; background: white; border-radius: 50%; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        audio {
-            width: 100%;
-            height: 40px;
-            border-radius: 20px;
-            margin-top: 15px;
-            outline: none;
-            background: #f5f5f5;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
-        }
-
-        .audio-counter { font-size: 15px; color: #555; margin-bottom: 10px; font-weight: bold; letter-spacing: 0.5px; }
+        audio { width: 100%; height: 40px; border-radius: 20px; margin-top: 15px; outline: none; background: #f5f5f5; }
+        .audio-counter { font-size: 15px; color: #555; margin-bottom: 10px; font-weight: bold; }
         
         .next-audio-btn { 
             display: none; margin-top: 15px; padding: 12px 25px; 
-            background: #28a745; color: white; border: none; 
-            border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold;
-            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
-            transition: transform 0.2s;
+            background: #28a745; color: white; border: none; border-radius: 25px; 
+            cursor: pointer; font-size: 16px; font-weight: bold;
         }
-        .next-audio-btn:hover { transform: scale(1.05); }
 
+        /* --- ПЕРЕХОДНАЯ НАДПИСЬ (ГЛЕБ) --- */
         .gleb-transition { 
-            display: none; text-align: center; margin: 30px auto; padding: 25px; 
-            background: #fff3cd; border: 2px dashed #ffc107; border-radius: 15px; 
-            font-size: 18px; font-weight: bold; color: #856404; 
-            animation: fadeIn 1s ease; position: relative; z-index: 2;
+            font-size: 18px; font-weight: bold; color: #856404; line-height: 1.5;
+            background: #fff3cd; border: 2px dashed #ffc107; border-radius: 15px; padding: 20px;
         }
 
-        /* --- БЛОК: ВИДЕО НА ПАМЯТЬ (ГОРИЗОНТАЛЬНОЕ) --- */
-        .video-section { 
-            display: none; 
-            margin: 40px auto; 
-            width: 100%; 
-            max-width: 550px; 
-            position: relative; 
-            z-index: 2; 
-            animation: fadeIn 1s ease;
-        }
-        .video-card {
-            background: #ffffff;
-            padding: 12px;
-            border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            position: relative;
-        }
-        .video-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
+        /* --- ВИДЕО --- */
         .video-wrapper {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9; 
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
+            position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000;
+            border-radius: 12px; overflow: hidden; margin-bottom: 15px;
         }
-        .video-wrapper video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; 
-            display: block;
+        .video-wrapper video { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .video-caption { font-size: 18px; color: #444; font-weight: bold; font-style: italic; }
+
+        /* --- СЛАЙДЕР (ПРОВЕСТИ ЧТОБЫ ВКЛЮЧИТЬ) --- */
+        .swipe-container {
+            width: 100%; max-width: 350px; margin: 20px auto; position: relative;
+            background: #e0e0e0; border-radius: 30px; height: 60px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            user-select: none; -webkit-user-select: none;
         }
-        .video-caption {
-            text-align: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 20px;
-            color: #444;
-            margin-top: 20px;
-            font-weight: bold;
-            font-style: italic;
+        .swipe-text {
+            position: absolute; width: 100%; text-align: center; line-height: 60px;
+            color: #777; font-weight: bold; font-size: 16px; pointer-events: none;
+        }
+        .swipe-thumb {
+            position: absolute; left: 0; top: 0; width: 60px; height: 60px;
+            background: linear-gradient(135deg, #4caf50, #2e7d32); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 24px; cursor: grab; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: box-shadow 0.2s;
+        }
+        .swipe-thumb:active { cursor: grabbing; box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
+
+        /* --- ПОЛНОЭКРАННЫЙ ФИНАЛ --- */
+        #fullscreenSurprise {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle, #1a0505 0%, #000000 100%);
+            z-index: 9999; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; color: white;
+        }
+        #surpriseText {
+            font-size: clamp(24px, 8vw, 48px); font-weight: 900; line-height: 1.3;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(211, 47, 47, 0.8);
+            animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            margin-bottom: 20px; padding: 0 20px;
+        }
+        #fireworksCanvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1;
         }
     </style>
 </head>
@@ -181,7 +154,7 @@
     
     <h1>🎉 Тест для именинника! 🎉</h1>
 
-    <!-- 15 ВОПРОСОВ -->
+    <!-- 15 ВОПРОСОВ (без изменений) -->
     <div class="question">
         <h3>1. Благодаря чему наша группа всё-таки получила дипломы?</h3>
         <button onclick="checkAnswer(this, false)">А) Мы заключили сделку с Олечкой Юрьевной за шоколадку</button>
@@ -288,19 +261,20 @@
         <button onclick="checkAnswer(this, true)">Г) 10 из 10, вы мои маленькие (уже взрослые) победы</button>
     </div>
 
-    <!-- ФИНАЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ -->
+    <!-- ФИНАЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ (ПО БЛОКАМ) -->
     <div class="result" id="finalResult"></div>
     
-    <!-- ЗАБАВНАЯ КНОПКА 1 -->
-    <button class="action-btn" id="btnDiploma" onclick="showDiploma()">🎓 Получить грамоту «За стальные нервы»</button>
-    <div class="diploma-container" id="diplomaContainer">
-        <img src="диплом.png" alt="Диплом лучшего куратора">
+    <!-- БЛОК 1: ДИПЛОМ -->
+    <button class="action-btn" id="btnDiploma" onclick="showStage('diplomaStage')">🎓 Получить грамоту «За стальные нервы»</button>
+    <div class="stage-block" id="diplomaStage">
+        <div class="diploma-container" style="display:block;">
+            <img src="диплом.png" alt="Диплом лучшего куратора">
+        </div>
+        <button class="action-btn" style="display:block; margin-top:20px;" onclick="showStage('funnyAudioStage')">🎭 Прослушать «официальные» показания группы</button>
     </div>
 
-    <!-- БЛОК 1: ШУТОЧНЫЕ АУДИО -->
-    <!-- ЗАБАВНАЯ КНОПКА 2 -->
-    <button class="action-btn" id="btnFunnyAudio" onclick="startFunnyAudio()">🎭 Прослушать «официальные» показания группы</button>
-    <div class="audio-section" id="funnyAudioSection">
+    <!-- БЛОК 2: ШУТОЧНЫЕ АУДИО -->
+    <div class="stage-block" id="funnyAudioStage">
         <div class="audio-card funny">
             <div class="audio-counter" id="funnyAudioCounter">Послание 1 из 7</div>
             <audio id="funnyCurrentAudio" controls></audio>
@@ -308,15 +282,31 @@
         </div>
     </div>
 
-    <!-- ПЕРЕХОДНАЯ ФРАЗА -->
-    <div class="gleb-transition" id="glebTransition">
-        Александр Дмитриевич, я пытался их контролировать, но сила хаоса нашей группы оказалась сильнее моей. Так что просто примите это как есть: с Днём Рождения! Мы вас очень ценим! 🎉😅
+    <!-- БЛОК 3: НАДПИСЬ ОТ ГЛЕБА + ВИДЕО -->
+    <div class="stage-block" id="glebAndVideoStage">
+        <div class="gleb-transition" style="margin-bottom: 25px;">
+            Александр Дмитриевич, я пытался их контролировать, но сила хаоса нашей группы оказалась сильнее моей. Так что просто примите это как есть: с Днём Рождения! Мы вас очень ценим! 🎉😅
+        </div>
+        <div class="video-wrapper">
+            <video id="memoryVideo" controls playsinline poster="обложка-видео.png">
+                <source src="молодой.mp4" type="video/mp4">
+                Ваш браузер не поддерживает воспроизведение видео.
+            </video>
+        </div>
+        <div class="video-caption">Смотрите и улыбайтесь! С любовью, ваша группа! ❤️</div>
+        
+        <!-- СЛАЙДЕР ДЛЯ ВКЛЮЧЕНИЯ СЕРЬЕЗНОГО РЕЖИМА -->
+        <div style="margin-top: 30px;">
+            <p style="font-weight: bold; color: #555; margin-bottom: 10px;">👇 Проведите вправо, чтобы включить режим «без хаоса» 🤫</p>
+            <div class="swipe-container" id="swipeTrack">
+                <div class="swipe-text">Проведите для активации ➡️</div>
+                <div class="swipe-thumb" id="swipeThumb">💬</div>
+            </div>
+        </div>
     </div>
 
-    <!-- БЛОК 2: СЕРЬЕЗНЫЕ АУДИО -->
-    <!-- ЗАБАВНАЯ КНОПКА 3 -->
-    <button class="action-btn" id="btnSeriousAudio" onclick="startSeriousAudio()">❤️ Включить режим «без хаоса» 🤫</button>
-    <div class="audio-section" id="seriousAudioSection">
+    <!-- БЛОК 4: СЕРЬЕЗНЫЕ АУДИО -->
+    <div class="stage-block" id="seriousAudioStage">
         <div class="audio-card serious">
             <div class="audio-counter" id="seriousAudioCounter">Послание 1 из 8</div>
             <audio id="seriousCurrentAudio" controls></audio>
@@ -324,18 +314,13 @@
         </div>
     </div>
 
-    <!-- БЛОК 3: ВИДЕО НА ПАМЯТЬ -->
-    <!-- ЗАБАВНАЯ КНОПКА 4 -->
-    <button class="action-btn" id="btnVideo" onclick="showVideo()">🎬 Смотреть видео (предупреждаем: будет мило!)</button>
-    <div class="video-section" id="videoSection">
-        <div class="video-card">
-            <div class="video-wrapper">
-                <video id="memoryVideo" controls playsinline poster="обложка-видео.png">
-                    <source src="молодой.mp4" type="video/mp4">
-                    Ваш браузер не поддерживает воспроизведение видео.
-                </video>
-            </div>
-            <div class="video-caption">Смотрите и улыбайтесь! С любовью, ваша группа! ❤️</div>
+    <!-- ПОЛНОЭКРАННЫЙ ФИНАЛ -->
+    <div id="fullscreenSurprise">
+        <canvas id="fireworksCanvas"></canvas>
+        <div id="surpriseText">
+            С ДНЁМ РОЖДЕНИЯ,<br>
+            АЛЕКСАНДР ДМИТРИЕВИЧ!<br>
+            <span style="color: #ffd700; font-size: 1.2em;">МЫ ТЕБЯ ОЧЕНЬ ЛЮБИМ! ❤️</span>
         </div>
     </div>
 
@@ -381,36 +366,28 @@
                 let resultDiv = document.getElementById('finalResult');
                 resultDiv.style.display = 'block';
                 resultDiv.innerHTML = `🎂 С Днем Рождения! Вы прошли тест! 🎂<br><br>Правильных ответов: ${correctAnswers} из ${totalQuestions}<br>Но мы любим вас в любом случае! ❤️`;
-                resultDiv.scrollIntoView({ behavior: 'smooth' });
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
                 setTimeout(() => {
                     document.getElementById('btnDiploma').style.display = 'block';
-                    document.getElementById('btnDiploma').scrollIntoView({ behavior: 'smooth' });
-                }, 2000);
+                    document.getElementById('btnDiploma').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 1500);
             }
         }
 
-        function showDiploma() {
-            document.getElementById('btnDiploma').style.display = 'none';
-            document.getElementById('diplomaContainer').style.display = 'block';
-            document.getElementById('diplomaContainer').scrollIntoView({ behavior: 'smooth' });
+        // --- УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ПЕРЕХОДА МЕЖДУ БЛОКАМИ ---
+        function showStage(stageId) {
+            // Скрываем все кнопки-триггеры, чтобы не было "змеики"
+            document.querySelectorAll('.action-btn').forEach(btn => btn.style.display = 'none');
             
-            setTimeout(() => {
-                document.getElementById('btnFunnyAudio').style.display = 'block';
-                document.getElementById('btnFunnyAudio').scrollIntoView({ behavior: 'smooth' });
-            }, 1500);
+            const stage = document.getElementById(stageId);
+            stage.style.display = 'block';
+            stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        // --- 3. БЛОК ШУТОЧНЫХ АУДИО ---
+        // --- 3. ШУТОЧНЫЕ АУДИО ---
         const funnyAudioFiles = ['миша-гс-глеб.mp3', 'ярик-гс-глеб.mp3', 'полина з-гс-глеб.mp3', 'таня-гс-глеб.mp3', 'мээрим-гс-глеб.mp3', 'полина с-гс-глеб.mp3', 'аня-гс-глеб.mp3']; 
         let currentFunnyIndex = 0;
-
-        function startFunnyAudio() {
-            document.getElementById('btnFunnyAudio').style.display = 'none';
-            document.getElementById('funnyAudioSection').style.display = 'block';
-            loadFunnyAudio(0);
-            document.getElementById('funnyAudioSection').scrollIntoView({ behavior: 'smooth' });
-        }
 
         function loadFunnyAudio(index) {
             const audio = document.getElementById('funnyCurrentAudio');
@@ -426,23 +403,29 @@
                 if (index < funnyAudioFiles.length - 1) {
                     nextBtn.style.display = 'inline-block';
                 } else {
-                    // ЗАБАВНАЯ КНОПКА 5 (внутри JS)
-                    nextBtn.innerText = '😅 Показать, что я пыталась всё исправить';
-                    nextBtn.style.background = '#ffc107';
-                    nextBtn.style.color = '#333';
+                    nextBtn.innerText = '🎬 Перейти к посланию и видео';
+                    nextBtn.style.background = '#d32f2f';
+                    nextBtn.style.color = 'white';
                     nextBtn.style.display = 'inline-block';
                     nextBtn.onclick = function() {
-                        document.getElementById('funnyAudioSection').style.display = 'none';
-                        document.getElementById('glebTransition').style.display = 'block';
-                        document.getElementById('glebTransition').scrollIntoView({ behavior: 'smooth' });
-                        
-                        setTimeout(() => {
-                            document.getElementById('btnSeriousAudio').style.display = 'block';
-                            document.getElementById('btnSeriousAudio').scrollIntoView({ behavior: 'smooth' });
-                        }, 3500);
+                        showStage('glebAndVideoStage');
                     };
                 }
             };
+        }
+        // Запуск первого шуточного аудио при открытии блока
+        document.querySelector('#funnyAudioStage').addEventListener('transitionend', function() {
+            if(currentFunnyIndex === 0 && document.getElementById('funnyCurrentAudio').src === "") {
+                loadFunnyAudio(0);
+            }
+        });
+        // Хак для инициализации при клике на кнопку показа
+        const origShowStage = showStage;
+        showStage = function(stageId) {
+            origShowStage(stageId);
+            if(stageId === 'funnyAudioStage' && document.getElementById('funnyCurrentAudio').src === "") {
+                loadFunnyAudio(0);
+            }
         }
 
         function playNextFunnyAudio() {
@@ -450,19 +433,56 @@
             loadFunnyAudio(currentFunnyIndex);
         }
 
-        // --- 4. БЛОК СЕРЬЕЗНЫХ АУДИО ---
+        // --- 4. СЛАЙДЕР (ПРОВЕСТИ) ---
+        const thumb = document.getElementById('swipeThumb');
+        const track = document.getElementById('swipeTrack');
+        let isDragging = false;
+        let startX = 0;
+
+        function startDrag(e) {
+            isDragging = true;
+            startX = (e.touches ? e.touches[0].clientX : e.clientX) - thumb.offsetLeft;
+            thumb.style.transition = 'none';
+        }
+        function onDrag(e) {
+            if (!isDragging) return;
+            let x = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+            let max = track.offsetWidth - thumb.offsetWidth;
+            x = Math.max(0, Math.min(x, max));
+            thumb.style.left = x + 'px';
+            
+            if (x >= max * 0.9) {
+                isDragging = false;
+                thumb.style.left = max + 'px';
+                thumb.innerText = '✅';
+                track.querySelector('.swipe-text').innerText = 'Режим «без хаоса» активирован!';
+                track.style.background = '#d4edda';
+                
+                setTimeout(() => {
+                    showStage('seriousAudioStage');
+                    loadSeriousAudio(0);
+                }, 800);
+            }
+        }
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            thumb.style.transition = 'left 0.3s ease';
+            thumb.style.left = '0px';
+        }
+
+        thumb.addEventListener('mousedown', startDrag);
+        thumb.addEventListener('touchstart', startDrag);
+        window.addEventListener('mousemove', onDrag);
+        window.addEventListener('touchmove', onDrag, { passive: false });
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchend', endDrag);
+
+        // --- 5. СЕРЬЕЗНЫЕ АУДИО ---
         const seriousAudioFiles = [
             'миша-гс.mp3', 'ярик-гс.mp3', 'полина з-гс.mp3', 'таня-гс.mp3', 'мээрим-гс.mp3', 'полина с-гс.mp3', 'аня-гс.mp3', 'глеб-гс.mp3'
         ]; 
         let currentSeriousIndex = 0;
-
-        function startSeriousAudio() {
-            document.getElementById('glebTransition').style.display = 'none'; 
-            document.getElementById('btnSeriousAudio').style.display = 'none';
-            document.getElementById('seriousAudioSection').style.display = 'block';
-            loadSeriousAudio(0);
-            document.getElementById('seriousAudioSection').scrollIntoView({ behavior: 'smooth' });
-        }
 
         function loadSeriousAudio(index) {
             const audio = document.getElementById('seriousCurrentAudio');
@@ -478,16 +498,10 @@
                 if (index < seriousAudioFiles.length - 1) {
                     nextBtn.style.display = 'inline-block';
                 } else {
-                    // ЗАБАВНАЯ КНОПКА 6 (внутри JS)
-                    nextBtn.innerText = '🎬 Перейти к киношедевру группы 🍿';
-                    nextBtn.style.background = '#d32f2f';
-                    nextBtn.style.color = 'white';
-                    nextBtn.style.display = 'inline-block';
-                    nextBtn.onclick = function() {
-                        document.getElementById('seriousAudioSection').style.display = 'none';
-                        document.getElementById('btnVideo').style.display = 'block';
-                        document.getElementById('btnVideo').scrollIntoView({ behavior: 'smooth' });
-                    };
+                    // РЕЗКИЙ И НЕОЖИДАННЫЙ ФИНАЛ
+                    setTimeout(() => {
+                        triggerFinalSurprise();
+                    }, 1000);
                 }
             };
         }
@@ -497,11 +511,86 @@
             loadSeriousAudio(currentSeriousIndex);
         }
 
-        // --- 5. ВИДЕО НА ПАМЯТЬ ---
-        function showVideo() {
-            document.getElementById('btnVideo').style.display = 'none';
-            document.getElementById('videoSection').style.display = 'block';
-            document.getElementById('videoSection').scrollIntoView({ behavior: 'smooth' });
+        // --- 6. ПОЛНОЭКРАННЫЙ ФИНАЛ С ФЕЙЕРВЕРКОМ В СЛОВО "МОЛОДОЙ" ---
+        function triggerFinalSurprise() {
+            const surprise = document.getElementById('fullscreenSurprise');
+            surprise.style.display = 'flex';
+            
+            // Усиливаем серпантин
+            setInterval(createConfetti, 50);
+
+            // Запускаем канвас с частицами
+            initFireworksText();
+        }
+
+        function initFireworksText() {
+            const canvas = document.getElementById('fireworksCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // Рисуем текст, чтобы получить координаты пикселей
+            const fontSize = Math.min(canvas.width / 5, 120);
+            ctx.font = `900 ${fontSize}px 'Segoe UI', sans-serif`;
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('МОЛОДОЙ', canvas.width / 2, canvas.height / 2);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const particles = [];
+            const gap = 4; // шаг сканирования (чем меньше, тем больше частиц, но тяжелее для телефона)
+
+            for (let y = 0; y < canvas.height; y += gap) {
+                for (let x = 0; x < canvas.width; x += gap) {
+                    if (imageData.data[(y * canvas.width + x) * 4 + 3] > 128) {
+                        particles.push({
+                            targetX: x,
+                            targetY: y,
+                            x: canvas.width / 2 + (Math.random() - 0.5) * 100, // старт из центра
+                            y: canvas.height + Math.random() * 200, // старт снизу
+                            vx: (Math.random() - 0.5) * 15, // начальный взрывной импульс
+                            vy: -(Math.random() * 15 + 10),
+                            color: `hsl(${Math.random() * 60 + 10}, 100%, ${50 + Math.random() * 30}%)`, // золотые/красные/оранжевые
+                            ease: 0.04 + Math.random() * 0.04,
+                            size: Math.random() * 2 + 1
+                        });
+                    }
+                }
+            }
+            
+            // Очищаем текст, оставляем только частицы
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            function animate() {
+                ctx.fillStyle = 'rgba(26, 5, 5, 0.2)'; // эффект шлейфа
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(p => {
+                    // Физика: притяжение к целевой точке + затухание скорости
+                    p.vx += (p.targetX - p.x) * p.ease;
+                    p.vy += (p.targetY - p.y) * p.ease;
+                    p.vx *= 0.85; // трение
+                    p.vy *= 0.85;
+                    
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // Адаптация под изменение размера окна
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
         }
     </script>
 </body>

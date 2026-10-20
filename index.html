@@ -279,7 +279,7 @@
         <div class="diploma-container" style="display:block;">
             <img src="диплом.png" alt="Диплом лучшего куратора">
         </div>
-        <button class="internal-next-btn" onclick="showStage('funnyAudioStage')">Далее: Шуточные голосовые 🎭 ➡️</button>
+        <button class="internal-next-btn" onclick="showStage('funnyAudioStage')">Продолжим🎭 ➡️</button>
     </div>
 
     <!-- БЛОК 2: ШУТОЧНЫЕ АУДИО -->
@@ -305,7 +305,7 @@
         <div class="video-caption">Смотрите и улыбайтесь! С любовью, ваша группа! ❤️</div>
         
         <div style="margin-top: 30px;">
-            <p style="font-weight: bold; color: #555; margin-bottom: 10px;">👇 Проведите вправо, чтобы перейти к серьезным поздравлениям</p>
+            <p style="font-weight: bold; color: #555; margin-bottom: 10px;">👇 Проведите вправо, чтоб включить режим без хаоса</p>
             <div class="swipe-container" id="swipeTrack">
                 <div class="swipe-text">Проведите для активации ➡️</div>
                 <div class="swipe-thumb" id="swipeThumb">💬</div>
@@ -318,7 +318,7 @@
         <div class="audio-card serious">
             <div class="audio-counter" id="seriousAudioCounter">Послание 1 из 8</div>
             <audio id="seriousCurrentAudio" controls></audio>
-            <button class="next-audio-btn" id="seriousNextAudioBtn" onclick="playNextSeriousAudio()">Следующее голосовое ➡️</button>
+            <button class="next-audio-btn" id="seriousNextAudioBtn" onclick="playNextSeriousAudio()">Далее ➡️</button>
         </div>
     </div>
 
@@ -424,11 +424,11 @@
             
             audio.onended = function() {
                 if (index < funnyAudioFiles.length - 1) {
-                    nextBtn.innerText = 'Следующее голосовое ➡️';
+                    nextBtn.innerText = 'Следующее ➡️';
                     nextBtn.style.background = '#28a745';
                     nextBtn.style.display = 'inline-block';
                 } else {
-                    nextBtn.innerText = '🎬 Далее: Видео от группы';
+                    nextBtn.innerText = '🎬 Далее: Видео от курса';
                     nextBtn.style.background = '#d32f2f';
                     nextBtn.style.display = 'inline-block';
                     nextBtn.onclick = function() {
@@ -489,7 +489,7 @@
 
         // --- 6. СЕРЬЕЗНЫЕ АУДИО ---
         const seriousAudioFiles = [
-            'миша-гс.mp3', 'ярик-гс.mp3', 'полина з-гс.mp3', 'таня-гс.mp3', 'мээрим-гс.mp3', 'полина с-гс.mp3', 'аня-гс.mp3', 'глеб-гс.mp3'
+            'миша-гс.mp3', 'ярик-гс.mp3', 'мое-гс.mp3', 'полина з-гс.mp3', 'таня-гс.mp3', 'мээрим-гс.mp3', 'аня-гс.mp3', 'глеб-гс.mp3', 'полина с-гс.mp3'
         ]; 
         let currentSeriousIndex = 0;
 

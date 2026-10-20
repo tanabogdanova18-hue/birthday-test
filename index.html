@@ -37,7 +37,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* --- ОТДЕЛЬНЫЕ БЛОКИ (ЧТОБЫ НЕ БЫЛО ЗМЕЙКИ) --- */
+        /* --- ОТДЕЛЬНЫЕ БЛОКИ --- */
         .stage-block {
             display: none;
             margin: 30px auto;
@@ -52,13 +52,21 @@
             border: 2px solid #ffebee;
         }
 
-        .action-btn {
+        .main-trigger-btn {
             display: none; width: 80%; margin: 20px auto; padding: 18px; font-size: 18px; font-weight: bold;
             color: white; background: linear-gradient(135deg, #d32f2f, #c62828); border: none; border-radius: 50px;
             cursor: pointer; box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4); transition: transform 0.2s;
             position: relative; z-index: 2;
         }
-        .action-btn:hover { transform: scale(1.05); }
+        .main-trigger-btn:hover { transform: scale(1.05); }
+
+        /* Кнопка внутри блока для перехода дальше */
+        .internal-next-btn {
+            display: block; width: 90%; margin: 20px auto 0; padding: 15px; font-size: 16px; font-weight: bold;
+            color: white; background: linear-gradient(135deg, #d32f2f, #c62828); border: none; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); transition: transform 0.2s;
+        }
+        .internal-next-btn:hover { transform: scale(1.03); }
 
         .diploma-container img { max-width: 100%; border-radius: 15px; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4); border: 3px solid #d4af37; }
 
@@ -112,7 +120,7 @@
         .video-wrapper video { width: 100%; height: 100%; object-fit: contain; display: block; }
         .video-caption { font-size: 18px; color: #444; font-weight: bold; font-style: italic; }
 
-        /* --- СЛАЙДЕР (ПРОВЕСТИ ЧТОБЫ ВКЛЮЧИТЬ) --- */
+        /* --- СЛАЙДЕР --- */
         .swipe-container {
             width: 100%; max-width: 350px; margin: 20px auto; position: relative;
             background: #e0e0e0; border-radius: 30px; height: 60px;
@@ -261,16 +269,16 @@
         <button onclick="checkAnswer(this, true)">Г) 10 из 10, вы мои маленькие (уже взрослые) победы</button>
     </div>
 
-    <!-- ФИНАЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ (ПО БЛОКАМ) -->
+    <!-- ФИНАЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ -->
     <div class="result" id="finalResult"></div>
     
     <!-- БЛОК 1: ДИПЛОМ -->
-    <button class="action-btn" id="btnDiploma" onclick="showStage('diplomaStage')">🎓 Получить грамоту «За стальные нервы»</button>
+    <button class="main-trigger-btn" id="btnDiploma" onclick="showStage('diplomaStage')">🎓 Получить грамоту «За стальные нервы»</button>
     <div class="stage-block" id="diplomaStage">
         <div class="diploma-container" style="display:block;">
             <img src="диплом.png" alt="Диплом лучшего куратора">
         </div>
-        <button class="action-btn" style="display:block; margin-top:20px;" onclick="showStage('funnyAudioStage')">🎭 Прослушать «официальные» показания группы</button>
+        <button class="internal-next-btn" onclick="showStage('funnyAudioStage')">🎭 Прослушать «официальные» показания группы</button>
     </div>
 
     <!-- БЛОК 2: ШУТОЧНЫЕ АУДИО -->
@@ -282,7 +290,7 @@
         </div>
     </div>
 
-    <!-- БЛОК 3: НАДПИСЬ ОТ ГЛЕБА + ВИДЕО -->
+    <!-- БЛОК 3: НАДПИСЬ ОТ ГЛЕБА + ВИДЕО + СЛАЙДЕР -->
     <div class="stage-block" id="glebAndVideoStage">
         <div class="gleb-transition" style="margin-bottom: 25px;">
             Александр Дмитриевич, я пытался их контролировать, но сила хаоса нашей группы оказалась сильнее моей. Так что просто примите это как есть: с Днём Рождения! Мы вас очень ценим! 🎉😅
@@ -295,7 +303,6 @@
         </div>
         <div class="video-caption">Смотрите и улыбайтесь! С любовью, ваша группа! ❤️</div>
         
-        <!-- СЛАЙДЕР ДЛЯ ВКЛЮЧЕНИЯ СЕРЬЕЗНОГО РЕЖИМА -->
         <div style="margin-top: 30px;">
             <p style="font-weight: bold; color: #555; margin-bottom: 10px;">👇 Проведите вправо, чтобы включить режим «без хаоса» 🤫</p>
             <div class="swipe-container" id="swipeTrack">
@@ -375,17 +382,32 @@
             }
         }
 
-        // --- УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ПЕРЕХОДА МЕЖДУ БЛОКАМИ ---
+        // --- 3. УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ПЕРЕХОДА (ИСПРАВЛЕНА) ---
+        let funnyAudioStarted = false;
+        let seriousAudioStarted = false;
+
         function showStage(stageId) {
-            // Скрываем все кнопки-триггеры, чтобы не было "змеики"
-            document.querySelectorAll('.action-btn').forEach(btn => btn.style.display = 'none');
-            
+            // Скрываем только главные внешние кнопки-триггеры
+            document.querySelectorAll('.main-trigger-btn').forEach(btn => btn.style.display = 'none');
+
             const stage = document.getElementById(stageId);
-            stage.style.display = 'block';
-            stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (stage) {
+                stage.style.display = 'block';
+                stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            // Надежная инициализация аудио при первом открытии блока
+            if (stageId === 'funnyAudioStage' && !funnyAudioStarted) {
+                funnyAudioStarted = true;
+                loadFunnyAudio(0);
+            }
+            if (stageId === 'seriousAudioStage' && !seriousAudioStarted) {
+                seriousAudioStarted = true;
+                loadSeriousAudio(0);
+            }
         }
 
-        // --- 3. ШУТОЧНЫЕ АУДИО ---
+        // --- 4. ШУТОЧНЫЕ АУДИО ---
         const funnyAudioFiles = ['миша-гс-глеб.mp3', 'ярик-гс-глеб.mp3', 'полина з-гс-глеб.mp3', 'таня-гс-глеб.mp3', 'мээрим-гс-глеб.mp3', 'полина с-гс-глеб.mp3', 'аня-гс-глеб.mp3']; 
         let currentFunnyIndex = 0;
 
@@ -413,27 +435,13 @@
                 }
             };
         }
-        // Запуск первого шуточного аудио при открытии блока
-        document.querySelector('#funnyAudioStage').addEventListener('transitionend', function() {
-            if(currentFunnyIndex === 0 && document.getElementById('funnyCurrentAudio').src === "") {
-                loadFunnyAudio(0);
-            }
-        });
-        // Хак для инициализации при клике на кнопку показа
-        const origShowStage = showStage;
-        showStage = function(stageId) {
-            origShowStage(stageId);
-            if(stageId === 'funnyAudioStage' && document.getElementById('funnyCurrentAudio').src === "") {
-                loadFunnyAudio(0);
-            }
-        }
 
         function playNextFunnyAudio() {
             currentFunnyIndex++;
             loadFunnyAudio(currentFunnyIndex);
         }
 
-        // --- 4. СЛАЙДЕР (ПРОВЕСТИ) ---
+        // --- 5. СЛАЙДЕР (ПРОВЕСТИ) ---
         const thumb = document.getElementById('swipeThumb');
         const track = document.getElementById('swipeTrack');
         let isDragging = false;
@@ -460,7 +468,6 @@
                 
                 setTimeout(() => {
                     showStage('seriousAudioStage');
-                    loadSeriousAudio(0);
                 }, 800);
             }
         }
@@ -478,7 +485,7 @@
         window.addEventListener('mouseup', endDrag);
         window.addEventListener('touchend', endDrag);
 
-        // --- 5. СЕРЬЕЗНЫЕ АУДИО ---
+        // --- 6. СЕРЬЕЗНЫЕ АУДИО ---
         const seriousAudioFiles = [
             'миша-гс.mp3', 'ярик-гс.mp3', 'полина з-гс.mp3', 'таня-гс.mp3', 'мээрим-гс.mp3', 'полина с-гс.mp3', 'аня-гс.mp3', 'глеб-гс.mp3'
         ]; 
@@ -498,7 +505,6 @@
                 if (index < seriousAudioFiles.length - 1) {
                     nextBtn.style.display = 'inline-block';
                 } else {
-                    // РЕЗКИЙ И НЕОЖИДАННЫЙ ФИНАЛ
                     setTimeout(() => {
                         triggerFinalSurprise();
                     }, 1000);
@@ -511,15 +517,11 @@
             loadSeriousAudio(currentSeriousIndex);
         }
 
-        // --- 6. ПОЛНОЭКРАННЫЙ ФИНАЛ С ФЕЙЕРВЕРКОМ В СЛОВО "МОЛОДОЙ" ---
+        // --- 7. ПОЛНОЭКРАННЫЙ ФИНАЛ ---
         function triggerFinalSurprise() {
             const surprise = document.getElementById('fullscreenSurprise');
             surprise.style.display = 'flex';
-            
-            // Усиливаем серпантин
             setInterval(createConfetti, 50);
-
-            // Запускаем канвас с частицами
             initFireworksText();
         }
 
@@ -529,7 +531,6 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
 
-            // Рисуем текст, чтобы получить координаты пикселей
             const fontSize = Math.min(canvas.width / 5, 120);
             ctx.font = `900 ${fontSize}px 'Segoe UI', sans-serif`;
             ctx.fillStyle = 'white';
@@ -539,7 +540,7 @@
 
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const particles = [];
-            const gap = 4; // шаг сканирования (чем меньше, тем больше частиц, но тяжелее для телефона)
+            const gap = 4;
 
             for (let y = 0; y < canvas.height; y += gap) {
                 for (let x = 0; x < canvas.width; x += gap) {
@@ -547,11 +548,11 @@
                         particles.push({
                             targetX: x,
                             targetY: y,
-                            x: canvas.width / 2 + (Math.random() - 0.5) * 100, // старт из центра
-                            y: canvas.height + Math.random() * 200, // старт снизу
-                            vx: (Math.random() - 0.5) * 15, // начальный взрывной импульс
+                            x: canvas.width / 2 + (Math.random() - 0.5) * 100,
+                            y: canvas.height + Math.random() * 200,
+                            vx: (Math.random() - 0.5) * 15,
                             vy: -(Math.random() * 15 + 10),
-                            color: `hsl(${Math.random() * 60 + 10}, 100%, ${50 + Math.random() * 30}%)`, // золотые/красные/оранжевые
+                            color: `hsl(${Math.random() * 60 + 10}, 100%, ${50 + Math.random() * 30}%)`,
                             ease: 0.04 + Math.random() * 0.04,
                             size: Math.random() * 2 + 1
                         });
@@ -559,20 +560,17 @@
                 }
             }
             
-            // Очищаем текст, оставляем только частицы
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             function animate() {
-                ctx.fillStyle = 'rgba(26, 5, 5, 0.2)'; // эффект шлейфа
+                ctx.fillStyle = 'rgba(26, 5, 5, 0.2)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
                 particles.forEach(p => {
-                    // Физика: притяжение к целевой точке + затухание скорости
                     p.vx += (p.targetX - p.x) * p.ease;
                     p.vy += (p.targetY - p.y) * p.ease;
-                    p.vx *= 0.85; // трение
+                    p.vx *= 0.85;
                     p.vy *= 0.85;
-                    
                     p.x += p.vx;
                     p.y += p.vy;
 
@@ -581,12 +579,10 @@
                     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                     ctx.fill();
                 });
-                
                 requestAnimationFrame(animate);
             }
             animate();
 
-            // Адаптация под изменение размера окна
             window.addEventListener('resize', () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;

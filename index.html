@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест на День Рождения 🎂</title>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            max-width: 600px; margin: 0 auto; padding: 20px; 
+            background: #fdf2f2; 
+            color: #333; 
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* СЕРПАНТИН */
+        .confetti {
+            position: fixed; width: 10px; height: 20px; top: -20px;
+            animation: fall linear infinite; pointer-events: none; z-index: 1;
+        }
+        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
+
+        h1 { text-align: center; color: #d32f2f; font-size: 28px; margin-bottom: 30px; position: relative; z-index: 2; }
+        
+        .question { margin-bottom: 25px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; z-index: 2; }
+        h3 { color: #c62828; margin-top: 0; font-size: 18px; }
+        
+        button { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 10px; background: #fff; font-size: 16px; cursor: pointer; transition: 0.2s; text-align: left; position: relative; z-index: 2; }
+        button:hover { background: #f9f9f9; border-color: #ccc; }
+        .correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+        .wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        
+        .result { text-align: center; font-size: 24px; color: #d32f2f; margin-top: 30px; padding: 20px; background: white; border-radius: 15px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; z-index: 2; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* --- ОТДЕЛЬНЫЕ БЛОКИ --- */
+        .stage-block {
+            display: none;
+            margin: 30px auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeIn 0.8s ease;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            border: 2px solid #ffebee;
+        }
+
+        .main-trigger-btn {
+            display: none; width: 85%; margin: 20px auto; padding: 18px; font-size: 18px; font-weight: bold;
+            color: white; background: linear-gradient(135deg, #d32f2f, #c62828); border: none; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4); transition: transform 0.2s;
+            position: relative; z-index: 2;
+        }
+        .main-trigger-btn:hover { transform: scale(1.03); }
+
+        .internal-next-btn {
+            display: block; width: 90%; margin: 25px auto 0; padding: 16px; font-size: 17px; font-weight: bold;
+            color: white; background: linear-gradient(135deg, #d32f2f, #c62828); border: none; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); transition: transform 0.2s;
+        }
+        .internal-next-btn:hover { transform: scale(1.03); }
+
+        .diploma-container img { max-width: 100%; border-radius: 15px; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4); border: 3px solid #d4af37; }
+
+        /* --- АУДИО БЛОКИ --- */
+        .audio-card {
+            padding: 30px 20px 20px 20px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .audio-card.funny {
+            background: linear-gradient(135deg, #fffdf5 0%, #fff8e1 100%);
+            border: 3px dashed #ffb74d;
+        }
+        .audio-card.funny::before {
+            content: '🎭'; position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+            font-size: 32px; background: white; border-radius: 50%; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .audio-card.serious {
+            background: linear-gradient(135deg, #ffffff 0%, #ffebee 100%);
+            border: 2px solid #ef9a9a;
+        }
+        .audio-card.serious::before {
+            content: '❤️'; position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+            font-size: 28px; background: white; border-radius: 50%; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        audio { width: 100%; height: 45px; border-radius: 20px; margin-top: 15px; outline: none; background: #f5f5f5; }
+        .audio-counter { font-size: 15px; color: #555; margin-bottom: 10px; font-weight: bold; }
+        
+        .next-audio-btn { 
+            display: none; margin-top: 20px; padding: 14px 25px; 
+            background: #28a745; color: white; border: none; border-radius: 50px; 
+            cursor: pointer; font-size: 16px; font-weight: bold; width: 90%;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+            animation: fadeIn 0.5s ease;
+        }
+        .next-audio-btn:hover { transform: scale(1.03); background: #218838; }
+
+        /* --- ПЕРЕХОДНАЯ НАДПИСЬ (ГЛЕБ) --- */
+        .gleb-transition { 
+            font-size: 18px; font-weight: bold; color: #856404; line-height: 1.5;
+            background: #fff3cd; border: 2px dashed #ffc107; border-radius: 15px; padding: 20px;
+        }
+
+        /* --- ВИДЕО --- */
+        .video-wrapper {
+            position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000;
+            border-radius: 12px; overflow: hidden; margin-bottom: 15px;
+        }
+        .video-wrapper video { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .video-caption { font-size: 18px; color: #444; font-weight: bold; font-style: italic; }
+
+        /* --- СЛАЙДЕР --- */
+        .swipe-container {
+            width: 100%; max-width: 350px; margin: 25px auto; position: relative;
+            background: #e0e0e0; border-radius: 30px; height: 60px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            user-select: none; -webkit-user-select: none;
+        }
+        .swipe-text {
+            position: absolute; width: 100%; text-align: center; line-height: 60px;
+            color: #777; font-weight: bold; font-size: 15px; pointer-events: none; padding: 0 10px; box-sizing: border-box;
+        }
+        .swipe-thumb {
+            position: absolute; left: 0; top: 0; width: 60px; height: 60px;
+            background: linear-gradient(135deg, #4caf50, #2e7d32); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 24px; cursor: grab; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: box-shadow 0.2s;
+        }
+        .swipe-thumb:active { cursor: grabbing; box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
+
+        /* --- ПОЛНОЭКРАННЫЙ ФИНАЛ --- */
+        #fullscreenSurprise {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle, #1a0505 0%, #000000 100%);
+            z-index: 9999; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; color: white;
+        }
+        #surpriseText {
+            font-size: clamp(24px, 8vw, 48px); font-weight: 900; line-height: 1.3;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(211, 47, 47, 0.8);
+            animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            margin-bottom: 20px; padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+        #fireworksCanvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>🎉 Тест для молодого! 🎉</h1>
+
+    <!-- 15 ВОПРОСОВ -->
+    <div class="question">
+        <h3>1. Благодаря чему наша группа всё-таки получила дипломы?</h3>
+        <button onclick="checkAnswer(this, false)">А) Мы заключили сделку с Олечкой Юрьевной за шоколадку</button>
+        <button onclick="checkAnswer(this, false)">Б) Это была симуляция, и мы до сих пор сидим на парах</button>
+        <button onclick="checkAnswer(this, true)">В) Нервная система нашего куратора сделана из титана и волшебства</button>
+        <button onclick="checkAnswer(this, false)">Г) Мы просто очень красиво просили</button>
+    </div>
+    <div class="question">
+        <h3>2. Какая Ваша фраза стала нашим негласным гимном?</h3>
+        <button onclick="checkAnswer(this, false)">А) Заставлять куратора стареть в "собачьих" годах</button>
+        <button onclick="checkAnswer(this, true)">Б) Умение задавать один и тот же вопрос 5 раз</button>
+        <button onclick="checkAnswer(this, false)">В) Массовая амнезия в день сдачи курсовой</button>
+        <button onclick="checkAnswer(this, false)">Г) Превращать 1 чашку кофе в 3 часа паники</button>
+    </div>
+    <div class="question">
+        <h3>3. Какова была наша главная суперсила как курса?</h3>
+        <button onclick="checkAnswer(this, false)">А) «Я выйду на 2 минуты»</button>
+        <button onclick="checkAnswer(this, false)">Б) «Вы это серьёзно сейчас?»</button>
+        <button onclick="checkAnswer(this, false)">В) «В моё время студенты сами знали дедлайны»</button>
+        <button onclick="checkAnswer(this, true)">Г) «Оооо, вы всё-таки пришли»</button>
+    </div>
+    <div class="question">
+        <h3>4. Как на самом деле называлась Ваша должность на нашем курсе?</h3>
+        <button onclick="checkAnswer(this, false)">А) Куратор курса</button>
+        <button onclick="checkAnswer(this, true)">Б) Человек, который знает о нас слишком много</button>
+        <button onclick="checkAnswer(this, false)">В) Главный менеджер по укрощению хаоса</button>
+        <button onclick="checkAnswer(this, false)">Г) Профессиональный продлеватель дедлайнов</button>
+    </div>
+    <div class="question">
+        <h3>5. Что Александр Дмитриевич видит в своих самых сладких снах?</h3>
+        <button onclick="checkAnswer(this, false)">А) Студентов, которые сдают всё с первого раза и без слёз</button>
+        <button onclick="checkAnswer(this, false)">Б) Мир, где не существует слова «пересдача»</button>
+        <button onclick="checkAnswer(this, false)">В) Пятницу, 10:00, и выключенный телефон</button>
+        <button onclick="checkAnswer(this, true)">Г) Всё вышеперечисленное + наш курс</button>
+    </div>
+    <div class="question">
+        <h3>6. Самый травмирующий момент за всё время нашей учёбы у вас — это...</h3>
+        <button onclick="checkAnswer(this, false)">А) Пары в 8:30 утра</button>
+        <button onclick="checkAnswer(this, false)">Б) Когда Ольга Юрьевна приходила на нас жаловаться</button>
+        <button onclick="checkAnswer(this, false)">В) Момент, когда Вы поняли, что мы выпускаемся</button>
+        <button onclick="checkAnswer(this, true)">Г) Осознание, что после колледжа мы не появимся в его стенах</button>
+    </div>
+    <div class="question">
+        <h3>7. Теперь, когда мы в разных городах и официально взрослые, каков наш статус для вас?</h3>
+        <button onclick="checkAnswer(this, false)">А) Бывшие студенты, которые иногда пишут</button>
+        <button onclick="checkAnswer(this, false)">Б) Ваши личные агенты по созданию поводов для улыбки</button>
+        <button onclick="checkAnswer(this, false)">В) Группа поддержки</button>
+        <button onclick="checkAnswer(this, true)">Г) Все варианты верны</button>
+    </div>
+    <div class="question">
+        <h3>8. Чего мы желаем нашему любимому куратору?</h3>
+        <button onclick="checkAnswer(this, false)">А) Студентов, которые читают конспекты ДО того, как задать вопрос</button>
+        <button onclick="checkAnswer(this, true)">Б) Всего этого и нашей бесконечной дружеской любви!</button>
+        <button onclick="checkAnswer(this, false)">В) Бесконечного запаса кофе и выходных без рабочих чатов</button>
+        <button onclick="checkAnswer(this, false)">Г) Орден «За освобождение курса» 1-й степени</button>
+    </div>
+    <div class="question">
+        <h3>9. Честно признавайтесь, как часто вы вспоминаете наш курс?</h3>
+        <button onclick="checkAnswer(this, true)">А) С теплой улыбкой, ведь скучаю по этому хаосу!</button>
+        <button onclick="checkAnswer(this, false)">Б) Каждый раз, когда вижу слово «дедлайн» (и вздрагиваю)</button>
+        <button onclick="checkAnswer(this, false)">В) Только когда пью очень крепкий кофе по утрам</button>
+        <button onclick="checkAnswer(this, false)">Г) Я надежно заблокировал эти воспоминания в дальнем углу мозга</button>
+    </div>
+    <div class="question">
+        <h3>10. Ваш идеальный сценарий празднования Дня Рождения прямо сейчас:</h3>
+        <button onclick="checkAnswer(this, false)">А) Тишина, уютный плед, сериал и телефон в авиарежиме</button>
+        <button onclick="checkAnswer(this, false)">Б) Вечеринка, на которой нет ни одного студента с вопросами «а как это делать?»</button>
+        <button onclick="checkAnswer(this, true)">В) Внезапный звонок от нашей группы с громкими поздравлениями</button>
+        <button onclick="checkAnswer(this, false)">Г) Путешествие туда, где не ловит интернет</button>
+    </div>
+    <div class="question">
+        <h3>11. Если бы вам дали одну суперспособность на сегодня, что бы вы выбрали?</h3>
+        <button onclick="checkAnswer(this, false)">А) Читать мысли (чтобы знать, кто из студентов реально болел, а кто спал)</button>
+        <button onclick="checkAnswer(this, false)">Б) Останавливать время (чтобы продлить выходные или сон)</button>
+        <button onclick="checkAnswer(this, false)">В) Заставлять любые дедлайны исчезать щелчком пальцев</button>
+        <button onclick="checkAnswer(this, true)">Г) Мгновенно телепортироваться к нам в города на чашку кофе</button>
+    </div>
+    <div class="question">
+        <h3>12. Что вы чувствуете, когда видите новое сообщение от кого-то из нашей группы?</h3>
+        <button onclick="checkAnswer(this, false)">А) «О нет, они опять что-то забыли, потеряли или не так поняли»</button>
+        <button onclick="checkAnswer(this, false)">Б) «Надеюсь, это просто поздравление, а не просьба написать рекомендательное письмо»</button>
+        <button onclick="checkAnswer(this, false)">В) Спортивный интерес: чем же они меня удивят на этот раз?</button>
+        <button onclick="checkAnswer(this, true)">Г) Искреннюю радость! Мои любимые люди на связи</button>
+    </div>
+    <div class="question">
+        <h3>13. Ваш главный жизненный девиз после того, как мы наконец выпустились:</h3>
+        <button onclick="checkAnswer(this, false)">А) «Всё, что не убивает, делает меня сильнее (и немного седее)»</button>
+        <button onclick="checkAnswer(this, true)">Б) «Я выжил с ними, теперь мне всё по плечу!»</button>
+        <button onclick="checkAnswer(this, false)">В) «Кофе — это не напиток, это мой основной источник энергии»</button>
+        <button onclick="checkAnswer(this, false)">Г) «Никогда не говори "никогда", особенно студентам»</button>
+    </div>
+    <div class="question">
+        <h3>14. Блиц! Если бы вы могли прямо сейчас получить один подарок, что бы это было?</h3>
+        <button onclick="checkAnswer(this, true)">А) Гарантия, что все мы станем успешными и будем вас вечно благодарить</button>
+        <button onclick="checkAnswer(this, false)">Б) Недельный оплачиваемый отпуск на море</button>
+        <button onclick="checkAnswer(this, false)">В) Волшебную кнопку «Сделать всю бумажную работу за меня»</button>
+        <button onclick="checkAnswer(this, false)">Г) Бесконечный запас любимой еды</button>
+    </div>
+    <div class="question">
+        <h3>15. (Финальный) Насколько сильно вы любите нашу группу по шкале от 1 до 10?</h3>
+        <button onclick="checkAnswer(this, true)">А) Все варианты абсолютно верны!</button>
+        <button onclick="checkAnswer(this, true)">Б) 100 из 10, и я готов подтвердить это документально</button>
+        <button onclick="checkAnswer(this, true)">В) 11 из 10, потому что вы вышли за пределы шкалы</button>
+        <button onclick="checkAnswer(this, true)">Г) 10 из 10, вы мои маленькие (уже взрослые) победы</button>
+    </div>
+
+    <!-- ФИНАЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ -->
+    <div class="result" id="finalResult"></div>
+    
+    <!-- БЛОК 1: ДИПЛОМ -->
+    <button class="main-trigger-btn" id="btnDiploma" onclick="showStage('diplomaStage')">🎓 Получить грамоту «За стальные нервы»</button>
+    <div class="stage-block" id="diplomaStage">
+        <div class="diploma-container" style="display:block;">
+            <img src="диплом.png" alt="Диплом лучшего куратора">
+        </div>
+        <button class="internal-next-btn" onclick="showStage('funnyAudioStage')">Далее 🎭 ➡️</button>
+    </div>
+
+    <!-- БЛОК 2: ШУТОЧНЫЕ АУДИО -->
+    <div class="stage-block" id="funnyAudioStage">
+        <div class="audio-card funny">
+            <div class="audio-counter" id="funnyAudioCounter">Послание 1 из 7</div>
+            <audio id="funnyCurrentAudio" controls></audio>
+            <button class="next-audio-btn" id="funnyNextAudioBtn" onclick="playNextFunnyAudio()">Следующее послание ➡️</button>
+        </div>
+    </div>
+
+    <!-- БЛОК 3: НАДПИСЬ ОТ ГЛЕБА + ВИДЕО + СЛАЙДЕР -->
+    <div class="stage-block" id="glebAndVideoStage">
+        <div class="gleb-transition" style="margin-bottom: 25px;">
+            Александр Дмитриевич, я пытался их контролировать, но сила хаоса нашей группы оказалась сильнее моей. Так что просто примите это как есть: с Днём Рождения! Мы вас очень ценим! 🎉😅
+        </div>
+        <div class="video-wrapper">
+            <video id="memoryVideo" controls playsinline poster="обложка-видео.png">
+                <source src="молодой.mp4" type="video/mp4">
+                Ваш браузер не поддерживает воспроизведение видео.
+            </video>
+        </div>
+        <div class="video-caption">Смотрите и улыбайтесь! С любовью, ваш курс! ❤️</div>
+        
+        <div style="margin-top: 30px;">
+            <p style="font-weight: bold; color: #555; margin-bottom: 10px;">👇 Проведите вправо, чтобы перейти в режим "без хаоса"</p>
+            <div class="swipe-container" id="swipeTrack">
+                <div class="swipe-text">Проведите для активации ➡️</div>
+                <div class="swipe-thumb" id="swipeThumb">💬</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- БЛОК 4: СЕРЬЕЗНЫЕ АУДИО -->
+    <div class="stage-block" id="seriousAudioStage">
+        <div class="audio-card serious">
+            <div class="audio-counter" id="seriousAudioCounter">Послание 1 из 9</div>
+            <audio id="seriousCurrentAudio" controls></audio>
+            <button class="next-audio-btn" id="seriousNextAudioBtn" onclick="playNextSeriousAudio()">Следующее послание ➡️</button>
+        </div>
+    </div>
+
+    <!-- ПОЛНОЭКРАННЫЙ ФИНАЛ -->
+    <div id="fullscreenSurprise">
+        <canvas id="fireworksCanvas"></canvas>
+        <div id="surpriseText">
+            С ДНЁМ РОЖДЕНИЯ,<br>
+            АЛЕКСАНДР ДМИТРИЕВИЧ!<br>
+            <span style="color: #ffd700; font-size: 1.2em;">МЫ ТЕБЯ ОЧЕНЬ ЛЮБИМ! ❤️</span>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. СЕРПАНТИН ---
+        function createConfetti() {
+            const colors = ['#d32f2f', '#c62828', '#f44336', '#ff5722', '#ff9800', '#ffc107', '#ffeb3b'];
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(confetti);
+            setTimeout(() => { confetti.remove(); }, 5000);
+        }
+        const confettiInterval = setInterval(createConfetti, 100);
+
+        // --- 2. ЛОГИКА ТЕСТА ---
+        let correctAnswers = 0;
+        let totalQuestions = document.querySelectorAll('.question').length;
+        let answeredQuestions = 0;
+
+        function checkAnswer(button, isCorrect) {
+            let parent = button.parentElement;
+            let buttons = parent.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                button.classList.add('correct');
+                correctAnswers++;
+            } else {
+                button.classList.add('wrong');
+                buttons.forEach(btn => {
+                    if (btn.getAttribute('onclick').includes('true')) btn.classList.add('correct');
+                });
+            }
+
+            answeredQuestions++;
+            if (answeredQuestions === totalQuestions) {
+                clearInterval(confettiInterval);
+                document.querySelectorAll('.confetti').forEach(c => c.remove());
+
+                let resultDiv = document.getElementById('finalResult');
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `🎂 С Днем Рождения! Вы прошли тест! 🎂<br><br>Правильных ответов: ${correctAnswers} из ${totalQuestions}<br>Но мы любим вас в любом случае! ❤️`;
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                setTimeout(() => {
+                    document.getElementById('btnDiploma').style.display = 'block';
+                    document.getElementById('btnDiploma').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 1500);
+            }
+        }
+
+        // --- 3. УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ПЕРЕХОДА ---
+        let funnyAudioStarted = false;
+        let seriousAudioStarted = false;
+
+        function showStage(stageId) {
+            document.querySelectorAll('.main-trigger-btn').forEach(btn => btn.style.display = 'none');
+
+            const stage = document.getElementById(stageId);
+            if (stage) {
+                stage.style.display = 'block';
+                stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            if (stageId === 'funnyAudioStage' && !funnyAudioStarted) {
+                funnyAudioStarted = true;
+                loadFunnyAudio(0);
+            }
+            if (stageId === 'seriousAudioStage' && !seriousAudioStarted) {
+                seriousAudioStarted = true;
+                loadSeriousAudio(0);
+            }
+        }
+
+        // --- 4. ШУТОЧНЫЕ АУДИО ---
+        const funnyAudioFiles = ['миша-гс-глеб.mp3', 'ярик-гс-глеб.mp3', 'полина з-гс-глеб.mp3', 'таня-гс-глеб.mp3', 'мээрим-гс-глеб.mp3', 'полина с-гс-глеб.mp3', 'аня-гс-глеб.mp3']; 
+        let currentFunnyIndex = 0;
+
+        function loadFunnyAudio(index) {
+            const audio = document.getElementById('funnyCurrentAudio');
+            const counter = document.getElementById('funnyAudioCounter');
+            const nextBtn = document.getElementById('funnyNextAudioBtn');
+            
+            nextBtn.style.display = 'none'; 
+            counter.innerText = `Послание ${index + 1} из ${funnyAudioFiles.length}`;
+            audio.src = funnyAudioFiles[index];
+            audio.load(); 
+            
+            audio.onended = function() {
+                if (index < funnyAudioFiles.length - 1) {
+                    nextBtn.innerText = 'Следующее послание ➡️';
+                    nextBtn.style.background = '#28a745';
+                    nextBtn.style.display = 'inline-block';
+                } else {
+                    nextBtn.innerText = '🎬 Далее';
+                    nextBtn.style.background = '#d32f2f';
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.onclick = function() {
+                        showStage('glebAndVideoStage');
+                    };
+                }
+            };
+        }
+
+        function playNextFunnyAudio() {
+            currentFunnyIndex++;
+            loadFunnyAudio(currentFunnyIndex);
+        }
+
+        // --- 5. СЛАЙДЕР ---
+        const thumb = document.getElementById('swipeThumb');
+        const track = document.getElementById('swipeTrack');
+        let isDragging = false;
+        let startX = 0;
+
+        function startDrag(e) {
+            isDragging = true;
+            startX = (e.touches ? e.touches[0].clientX : e.clientX) - thumb.offsetLeft;
+            thumb.style.transition = 'none';
+        }
+        function onDrag(e) {
+            if (!isDragging) return;
+            let x = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+            let max = track.offsetWidth - thumb.offsetWidth;
+            x = Math.max(0, Math.min(x, max));
+            thumb.style.left = x + 'px';
+            
+            if (x >= max * 0.9) {
+                isDragging = false;
+                thumb.style.left = max + 'px';
+                thumb.innerText = '✅';
+                track.querySelector('.swipe-text').innerText = 'Режим активирован!';
+                track.style.background = '#d4edda';
+                
+                setTimeout(() => {
+                    showStage('seriousAudioStage');
+                }, 800);
+            }
+        }
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            thumb.style.transition = 'left 0.3s ease';
+            thumb.style.left = '0px';
+        }
+
+        thumb.addEventListener('mousedown', startDrag);
+        thumb.addEventListener('touchstart', startDrag);
+        window.addEventListener('mousemove', onDrag);
+        window.addEventListener('touchmove', onDrag, { passive: false });
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchend', endDrag);
+
+        // --- 6. СЕРЬЕЗНЫЕ АУДИО ---
+        const seriousAudioFiles = [
+            'миша-гс.mp3', 'ярик-гс.mp3', 'мое-гс.mp3', 'полина з-гс.mp3', 'таня-гс.mp3', 'мээрим-гс.mp3', 'полина с-гс.mp3', 'аня-гс.mp3', 'глеб-гс.mp3'
+        ]; 
+        let currentSeriousIndex = 0;
+
+        function loadSeriousAudio(index) {
+            const audio = document.getElementById('seriousCurrentAudio');
+            const counter = document.getElementById('seriousAudioCounter');
+            const nextBtn = document.getElementById('seriousNextAudioBtn');
+            
+            nextBtn.style.display = 'none'; 
+            counter.innerText = `Послание ${index + 1} из ${seriousAudioFiles.length}`;
+            audio.src = seriousAudioFiles[index];
+            audio.load(); 
+            
+            audio.onended = function() {
+                if (index < seriousAudioFiles.length - 1) {
+                    nextBtn.innerText = 'Следующее послание ➡️';
+                    nextBtn.style.background = '#28a745';
+                    nextBtn.style.display = 'inline-block';
+                } else {
+                    nextBtn.innerText = '🎉 Заключительный сюрприз';
+                    nextBtn.style.background = '#d32f2f';
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.onclick = function() {
+                        triggerFinalSurprise();
+                    };
+                }
+            };
+        }
+
+        function playNextSeriousAudio() {
+            currentSeriousIndex++;
+            loadSeriousAudio(currentSeriousIndex);
+        }
+
+        // --- 7. ПОЛНОЭКРАННЫЙ ФИНАЛ ---
+        function triggerFinalSurprise() {
+            const surprise = document.getElementById('fullscreenSurprise');
+            surprise.style.display = 'flex';
+            setInterval(createConfetti, 50);
+            initFireworksText();
+        }
+
+        // --- 8. ФЕЙЕРВЕРК, ВЫЛЕТАЮЩИЙ СНИЗУ И СОБИРАЮЩИЙСЯ В СЛОВО ---
+        function initFireworksText() {
+            const canvas = document.getElementById('fireworksCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // 1. Рисуем слово "МОЛОДОЙ" временно, чтобы получить координаты пикселей
+            const fontSize = Math.min(canvas.width / 6, canvas.height / 4, 110);
+            ctx.font = `900 ${fontSize}px 'Segoe UI', sans-serif`;
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('МОЛОДОЙ', canvas.width / 2, canvas.height / 2);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const targetPoints = [];
+            const gap = 5;
+
+            for (let y = 0; y < canvas.height; y += gap) {
+                for (let x = 0; x < canvas.width; x += gap) {
+                    if (imageData.data[(y * canvas.width + x) * 4 + 3] > 128) {
+                        targetPoints.push({ x, y });
+                    }
+                }
+            }
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Палитра настоящего фейерверка
+            const fireworkColors = [
+                '#ff1744', '#f50057', '#d500f9', '#651fff',
+                '#2979ff', '#00e5ff', '#00e676', '#ffea00',
+                '#ff9100', '#ffd700', '#ffffff', '#ff4081'
+            ];
+
+            // 2. Создаём частицы — каждая стартует СНИЗУ экрана
+            const particles = targetPoints.map((target, i) => {
+                const colorGroup = Math.floor(i / 40) % fireworkColors.length;
+                const color = fireworkColors[colorGroup];
+                
+                return {
+                    targetX: target.x,
+                    targetY: target.y,
+                    x: Math.random() * canvas.width,
+                    y: canvas.height + Math.random() * 100,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: -(Math.random() * 8 + 12),
+                    color: color,
+                    size: Math.random() * 2 + 1.5,
+                    delay: Math.random() * 60,
+                    phase: 0,
+                    trail: [],
+                    twinkle: Math.random() * Math.PI * 2
+                };
+            });
+
+            let frame = 0;
+
+            function animate() {
+                frame++;
+                
+                ctx.fillStyle = 'rgba(10, 2, 5, 0.18)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(p => {
+                    if (frame < p.delay) return;
+
+                    p.trail.push({ x: p.x, y: p.y });
+                    if (p.trail.length > 6) p.trail.shift();
+
+                    if (p.phase === 0) {
+                        p.vy += 0.18;
+                        p.vx *= 0.99;
+                        p.x += p.vx;
+                        p.y += p.vy;
+
+                        if (p.vy > -2 || frame > p.delay + 80) {
+                            p.phase = 1;
+                        }
+                    } else {
+                        const dx = p.targetX - p.x;
+                        const dy = p.targetY - p.y;
+                        p.vx += dx * 0.035;
+                        p.vy += dy * 0.035;
+                        p.vx *= 0.88;
+                        p.vy *= 0.88;
+                        p.x += p.vx;
+                        p.y += p.vy;
+                    }
+
+                    p.trail.forEach((t, idx) => {
+                        const alpha = (idx / p.trail.length) * 0.4;
+                        ctx.fillStyle = p.color;
+                        ctx.globalAlpha = alpha;
+                        ctx.beginPath();
+                        ctx.arc(t.x, t.y, p.size * 0.6, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+
+                    p.twinkle += 0.15;
+                    const twinkleSize = p.size * (0.8 + Math.sin(p.twinkle) * 0.3);
+                    
+                    ctx.globalAlpha = 0.3;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, twinkleSize * 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, twinkleSize, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, twinkleSize * 0.4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                ctx.globalAlpha = 1;
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+    </script>
+</body>
+</html>

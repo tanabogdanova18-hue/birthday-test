@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест на День Рождения 🎂</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            max-width: 600px; margin: 0 auto; padding: 20px; 
+            background: #fdf2f2; 
+            color: #333; 
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* СЕРПАНТИН */
+        .confetti {
+            position: fixed; width: 10px; height: 20px; top: -20px;
+            animation: fall linear infinite; pointer-events: none; z-index: 1;
+        }
+        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
+
+        h1 { text-align: center; color: #d32f2f; font-size: 28px; margin-bottom: 30px; position: relative; z-index: 2; }
+        
+        .question { margin-bottom: 25px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; z-index: 2; }
+        h3 { color: #c62828; margin-top: 0; font-size: 18px; }
+        
+        button { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 10px; background: #fff; font-size: 16px; cursor: pointer; transition: 0.2s; text-align: left; position: relative; z-index: 2; }
+        button:hover { background: #f9f9f9; border-color: #ccc; }
+        .correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+        .wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        
+        .result { text-align: center; font-size: 24px; color: #d32f2f; margin-top: 30px; padding: 20px; background: white; border-radius: 15px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; z-index: 2; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .action-btn {
+            display: none; width: 80%; margin: 30px auto; padding: 18px; font-size: 18px; font-weight: bold;
+            color: white; background: linear-gradient(135deg, #d32f2f, #c62828); border: none; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4); transition: transform 0.2s;
+            position: relative; z-index: 2;
+        }
+        .action-btn:hover { transform: scale(1.05); }
+
+        .diploma-container { display: none; margin: 30px auto; text-align: center; animation: fadeIn 1s ease; position: relative; z-index: 2; }
+        .diploma-container img { max-width: 100%; border-radius: 15px; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4); border: 3px solid #d4af37; }
+
+        /* --- СТИЛИ ДЛЯ АУДИО --- */
+        .audio-section { display: none; margin: 30px 0; text-align: center; animation: fadeIn 0.5s ease; position: relative; z-index: 2; }
+        
+        .audio-card {
+            padding: 30px 20px 20px 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .audio-card:hover { transform: translateY(-3px); }
+
+        .audio-card.funny {
+            background: linear-gradient(135deg, #fffdf5 0%, #fff8e1 100%);
+            border: 3px dashed #ffb74d;
+            box-shadow: 0 8px 20px rgba(255, 183, 77, 0.25);
+        }
+        .audio-card.funny::before {
+            content: '🎭';
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            background: white;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .audio-card.serious {
+            background: linear-gradient(135deg, #ffffff 0%, #ffebee 100%);
+            border: 2px solid #ef9a9a;
+            box-shadow: 0 8px 20px rgba(239, 154, 154, 0.3);
+        }
+        .audio-card.serious::before {
+            content: '❤️';
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            background: white;
+            border-radius: 50%;
+            width: 40px; 
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        audio {
+            width: 100%;
+            height: 40px;
+            border-radius: 20px;
+            margin-top: 15px;
+            outline: none;
+            background: #f5f5f5;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        }
+
+        .audio-counter { font-size: 15px; color: #555; margin-bottom: 10px; font-weight: bold; letter-spacing: 0.5px; }
+        
+        .next-audio-btn { 
+            display: none; margin-top: 15px; padding: 12px 25px; 
+            background: #28a745; color: white; border: none; 
+            border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+            transition: transform 0.2s;
+        }
+        .next-audio-btn:hover { transform: scale(1.05); }
+
+        .gleb-transition { 
+            display: none; text-align: center; margin: 30px auto; padding: 25px; 
+            background: #fff3cd; border: 2px dashed #ffc107; border-radius: 15px; 
+            font-size: 18px; font-weight: bold; color: #856404; 
+            animation: fadeIn 1s ease; position: relative; z-index: 2;
+        }
+
+        /* --- БЛОК: ВИДЕО НА ПАМЯТЬ (ГОРИЗОНТАЛЬНОЕ) --- */
+        .video-section { 
+            display: none; 
+            margin: 40px auto; 
+            width: 100%; 
+            max-width: 550px; 
+            position: relative; 
+            z-index: 2; 
+            animation: fadeIn 1s ease;
+        }
+        .video-card {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+        }
+        .video-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9; 
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            display: block;
+        }
+        .video-caption {
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 20px;
+            color: #444;
+            margin-top: 20px;
+            font-weight: bold;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>🎉 Тест для именинника! 🎉</h1>
+
+    <!-- 15 ВОПРОСОВ -->
+    <div class="question">
+        <h3>1. Благодаря чему наша группа всё-таки получила дипломы?</h3>
+        <button onclick="checkAnswer(this, false)">А) Мы заключили сделку с Олечкой Юрьевной за шоколадку</button>
+        <button onclick="checkAnswer(this, false)">Б) Это была симуляция, и мы до сих пор сидим на парах</button>
+        <button onclick="checkAnswer(this, true)">В) Нервная система нашего куратора сделана из титана и волшебства</button>
+        <button onclick="checkAnswer(this, false)">Г) Мы просто очень красиво просили</button>
+    </div>
+    <div class="question">
+        <h3>2. Какая Ваша фраза стала нашим негласным гимном?</h3>
+        <button onclick="checkAnswer(this, false)">А) Заставлять куратора стареть в "собачьих" годах</button>
+        <button onclick="checkAnswer(this, true)">Б) Умение задавать один и тот же вопрос 5 раз</button>
+        <button onclick="checkAnswer(this, false)">В) Массовая амнезия в день сдачи курсовой</button>
+        <button onclick="checkAnswer(this, false)">Г) Превращать 1 чашку кофе в 3 часа паники</button>
+    </div>
+    <div class="question">
+        <h3>3. Какова была наша главная суперсила как курса?</h3>
+        <button onclick="checkAnswer(this, false)">А) «Я выйду на 2 минуты»</button>
+        <button onclick="checkAnswer(this, false)">Б) «Вы это серьёзно сейчас?»</button>
+        <button onclick="checkAnswer(this, false)">В) «В моё время студенты сами знали дедлайны»</button>
+        <button onclick="checkAnswer(this, true)">Г) «Оооо, вы всё-таки пришли»</button>
+    </div>
+    <div class="question">
+        <h3>4. Как на самом деле называлась Ваша должность на нашем курсе?</h3>
+        <button onclick="checkAnswer(this, false)">А) Куратор курса</button>
+        <button onclick="checkAnswer(this, true)">Б) Человек, который знает о нас слишком много</button>
+        <button onclick="checkAnswer(this, false)">В) Главный менеджер по укрощению хаоса</button>
+        <button onclick="checkAnswer(this, false)">Г) Профессиональный продлеватель дедлайнов</button>
+    </div>
+    <div class="question">
+        <h3>5. Что Александр Дмитриевич видит в своих самых сладких снах?</h3>
+        <button onclick="checkAnswer(this, false)">А) Студентов, которые сдают всё с первого раза и без слёз</button>
+        <button onclick="checkAnswer(this, false)">Б) Мир, где не существует слова «пересдача»</button>
+        <button onclick="checkAnswer(this, false)">В) Пятницу, 10:00, и выключенный телефон</button>
+        <button onclick="checkAnswer(this, true)">Г) Всё вышеперечисленное + наш курс</button>
+    </div>
+    <div class="question">
+        <h3>6. Самый травмирующий момент за всё время нашей учёбы у вас — это...</h3>
+        <button onclick="checkAnswer(this, false)">А) Пары в 8:30 утра</button>
+        <button onclick="checkAnswer(this, false)">Б) Когда Ольга Юрьевна приходила на нас жаловаться</button>
+        <button onclick="checkAnswer(this, false)">В) Момент, когда Вы поняли, что мы выпускаемся</button>
+        <button onclick="checkAnswer(this, true)">Г) Осознание, что после колледжа мы не появимся в его стенах</button>
+    </div>
+    <div class="question">
+        <h3>7. Теперь, когда мы в разных городах и официально взрослые, каков наш статус для вас?</h3>
+        <button onclick="checkAnswer(this, false)">А) Бывшие студенты, которые иногда пишут</button>
+        <button onclick="checkAnswer(this, false)">Б) Ваши личные агенты по созданию поводов для улыбки</button>
+        <button onclick="checkAnswer(this, false)">В) Группа поддержки</button>
+        <button onclick="checkAnswer(this, true)">Г) Все варианты верны</button>
+    </div>
+    <div class="question">
+        <h3>8. Чего мы желаем нашему любимому куратору?</h3>
+        <button onclick="checkAnswer(this, false)">А) Студентов, которые читают конспекты ДО того, как задать вопрос</button>
+        <button onclick="checkAnswer(this, true)">Б) Всего этого и нашей бесконечной дружеской любви!</button>
+        <button onclick="checkAnswer(this, false)">В) Бесконечного запаса кофе и выходных без рабочих чатов</button>
+        <button onclick="checkAnswer(this, false)">Г) Орден «За освобождение курса» 1-й степени</button>
+    </div>
+    <div class="question">
+        <h3>9. Честно признавайтесь, как часто вы вспоминаете наш курс?</h3>
+        <button onclick="checkAnswer(this, true)">А) С теплой улыбкой, ведь скучаю по этому хаосу!</button>
+        <button onclick="checkAnswer(this, false)">Б) Каждый раз, когда вижу слово «дедлайн» (и вздрагиваю)</button>
+        <button onclick="checkAnswer(this, false)">В) Только когда пью очень крепкий кофе по утрам</button>
+        <button onclick="checkAnswer(this, false)">Г) Я надежно заблокировал эти воспоминания в дальнем углу мозга</button>
+    </div>
+    <div class="question">
+        <h3>10. Ваш идеальный сценарий празднования Дня Рождения прямо сейчас:</h3>
+        <button onclick="checkAnswer(this, false)">А) Тишина, уютный плед, сериал и телефон в авиарежиме</button>
+        <button onclick="checkAnswer(this, false)">Б) Вечеринка, на которой нет ни одного студента с вопросами «а как это делать?»</button>
+        <button onclick="checkAnswer(this, true)">В) Внезапный звонок от нашей группы с громкими поздравлениями</button>
+        <button onclick="checkAnswer(this, false)">Г) Путешествие туда, где не ловит интернет</button>
+    </div>
+    <div class="question">
+        <h3>11. Если бы вам дали одну суперспособность на сегодня, что бы вы выбрали?</h3>
+        <button onclick="checkAnswer(this, false)">А) Читать мысли (чтобы знать, кто из студентов реально болел, а кто спал)</button>
+        <button onclick="checkAnswer(this, false)">Б) Останавливать время (чтобы продлить выходные или сон)</button>
+        <button onclick="checkAnswer(this, false)">В) Заставлять любые дедлайны исчезать щелчком пальцев</button>
+        <button onclick="checkAnswer(this, true)">Г) Мгновенно телепортироваться к нам в города на чашку кофе</button>
+    </div>
+    <div class="question">
+        <h3>12. Что вы чувствуете, когда видите новое сообщение от кого-то из нашей группы?</h3>
+        <button onclick="checkAnswer(this, false)">А) «О нет, они опять что-то забыли, потеряли или не так поняли»</button>
+        <button onclick="checkAnswer(this, false)">Б) «Надеюсь, это просто поздравление, а не просьба написать рекомендательное письмо»</button>
+        <button onclick="checkAnswer(this, false)">В) Спортивный интерес: чем же они меня удивят на этот раз?</button>
+        <button onclick="checkAnswer(this, true)">Г) Искреннюю радость! Мои любимые люди на связи</button>
+    </div>
+    <div class="question">
+        <h3>13. Ваш главный жизненный девиз после того, как мы наконец выпустились:</h3>
+        <button onclick="checkAnswer(this, false)">А) «Всё, что не убивает, делает меня сильнее (и немного седее)»</button>
+        <button onclick="checkAnswer(this, true)">Б) «Я выжил с ними, теперь мне всё по плечу!»</button>
+        <button onclick="checkAnswer(this, false)">В) «Кофе — это не напиток, это мой основной источник энергии»</button>
+        <button onclick="checkAnswer(this, false)">Г) «Никогда не говори "никогда", особенно студентам»</button>
+    </div>
+    <div class="question">
+        <h3>14. Блиц! Если бы вы могли прямо сейчас получить один подарок, что бы это было?</h3>
+        <button onclick="checkAnswer(this, true)">А) Гарантия, что все мы станем успешными и будем вас вечно благодарить</button>
+        <button onclick="checkAnswer(this, false)">Б) Недельный оплачиваемый отпуск на море</button>
+        <button onclick="checkAnswer(this, false)">В) Волшебную кнопку «Сделать всю бумажную работу за меня»</button>
+        <button onclick="checkAnswer(this, false)">Г) Бесконечный запас любимой еды</button>
+    </div>
+    <div class="question">
+        <h3>15. (Финальный) Насколько сильно вы любите нашу группу по шкале от 1 до 10?</h3>
+        <button onclick="checkAnswer(this, true)">А) Все варианты абсолютно верны!</button>
+        <button onclick="checkAnswer(this, true)">Б) 100 из 10, и я готов подтвердить это документально</button>
+        <button onclick="checkAnswer(this, true)">В) 11 из 10, потому что вы вышли за пределы шкалы</button>
+        <button onclick="checkAnswer(this, true)">Г) 10 из 10, вы мои маленькие (уже взрослые) победы</button>
+    </div>
+
+    <!-- ФИНАЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ -->
+    <div class="result" id="finalResult"></div>
+    
+    <!-- ЗАБАВНАЯ КНОПКА 1 -->
+    <button class="action-btn" id="btnDiploma" onclick="showDiploma()">🎓 Получить грамоту «За стальные нервы»</button>
+    <div class="diploma-container" id="diplomaContainer">
+        <img src="диплом.png" alt="Диплом лучшего куратора">
+    </div>
+
+    <!-- БЛОК 1: ШУТОЧНЫЕ АУДИО -->
+    <!-- ЗАБАВНАЯ КНОПКА 2 -->
+    <button class="action-btn" id="btnFunnyAudio" onclick="startFunnyAudio()">🎭 Прослушать «официальные» показания группы</button>
+    <div class="audio-section" id="funnyAudioSection">
+        <div class="audio-card funny">
+            <div class="audio-counter" id="funnyAudioCounter">Послание 1 из 7</div>
+            <audio id="funnyCurrentAudio" controls></audio>
+            <button class="next-audio-btn" id="funnyNextAudioBtn" onclick="playNextFunnyAudio()">Следующее ➡️</button>
+        </div>
+    </div>
+
+    <!-- ПЕРЕХОДНАЯ ФРАЗА -->
+    <div class="gleb-transition" id="glebTransition">
+        Александр Дмитриевич, я пытался их контролировать, но сила хаоса нашей группы оказалась сильнее моей. Так что просто примите это как есть: с Днём Рождения! Мы вас очень ценим! 🎉😅
+    </div>
+
+    <!-- БЛОК 2: СЕРЬЕЗНЫЕ АУДИО -->
+    <!-- ЗАБАВНАЯ КНОПКА 3 -->
+    <button class="action-btn" id="btnSeriousAudio" onclick="startSeriousAudio()">❤️ Включить режим «без хаоса» 🤫</button>
+    <div class="audio-section" id="seriousAudioSection">
+        <div class="audio-card serious">
+            <div class="audio-counter" id="seriousAudioCounter">Послание 1 из 8</div>
+            <audio id="seriousCurrentAudio" controls></audio>
+            <button class="next-audio-btn" id="seriousNextAudioBtn" onclick="playNextSeriousAudio()">Следующее послание ➡️</button>
+        </div>
+    </div>
+
+    <!-- БЛОК 3: ВИДЕО НА ПАМЯТЬ -->
+    <!-- ЗАБАВНАЯ КНОПКА 4 -->
+    <button class="action-btn" id="btnVideo" onclick="showVideo()">🎬 Смотреть видео (предупреждаем: будет мило!)</button>
+    <div class="video-section" id="videoSection">
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video id="memoryVideo" controls playsinline poster="обложка-видео.png">
+                    <source src="молодой.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает воспроизведение видео.
+                </video>
+            </div>
+            <div class="video-caption">Смотрите и улыбайтесь! С любовью, ваша группа! ❤️</div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. СЕРПАНТИН ---
+        function createConfetti() {
+            const colors = ['#d32f2f', '#c62828', '#f44336', '#ff5722', '#ff9800', '#ffc107', '#ffeb3b'];
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(confetti);
+            setTimeout(() => { confetti.remove(); }, 5000);
+        }
+        const confettiInterval = setInterval(createConfetti, 100);
+
+        // --- 2. ЛОГИКА ТЕСТА ---
+        let correctAnswers = 0;
+        let totalQuestions = document.querySelectorAll('.question').length;
+        let answeredQuestions = 0;
+
+        function checkAnswer(button, isCorrect) {
+            let parent = button.parentElement;
+            let buttons = parent.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                button.classList.add('correct');
+                correctAnswers++;
+            } else {
+                button.classList.add('wrong');
+                buttons.forEach(btn => {
+                    if (btn.getAttribute('onclick').includes('true')) btn.classList.add('correct');
+                });
+            }
+
+            answeredQuestions++;
+            if (answeredQuestions === totalQuestions) {
+                clearInterval(confettiInterval);
+                document.querySelectorAll('.confetti').forEach(c => c.remove());
+
+                let resultDiv = document.getElementById('finalResult');
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `🎂 С Днем Рождения! Вы прошли тест! 🎂<br><br>Правильных ответов: ${correctAnswers} из ${totalQuestions}<br>Но мы любим вас в любом случае! ❤️`;
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+
+                setTimeout(() => {
+                    document.getElementById('btnDiploma').style.display = 'block';
+                    document.getElementById('btnDiploma').scrollIntoView({ behavior: 'smooth' });
+                }, 2000);
+            }
+        }
+
+        function showDiploma() {
+            document.getElementById('btnDiploma').style.display = 'none';
+            document.getElementById('diplomaContainer').style.display = 'block';
+            document.getElementById('diplomaContainer').scrollIntoView({ behavior: 'smooth' });
+            
+            setTimeout(() => {
+                document.getElementById('btnFunnyAudio').style.display = 'block';
+                document.getElementById('btnFunnyAudio').scrollIntoView({ behavior: 'smooth' });
+            }, 1500);
+        }
+
+        // --- 3. БЛОК ШУТОЧНЫХ АУДИО ---
+        const funnyAudioFiles = ['миша-гс-глеб.mp3', 'ярик-гс-глеб.mp3', 'полина з-гс-глеб.mp3', 'таня-гс-глеб.mp3', 'мээрим-гс-глеб.mp3', 'полина с-гс-глеб.mp3', 'аня-гс-глеб.mp3']; 
+        let currentFunnyIndex = 0;
+
+        function startFunnyAudio() {
+            document.getElementById('btnFunnyAudio').style.display = 'none';
+            document.getElementById('funnyAudioSection').style.display = 'block';
+            loadFunnyAudio(0);
+            document.getElementById('funnyAudioSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadFunnyAudio(index) {
+            const audio = document.getElementById('funnyCurrentAudio');
+            const counter = document.getElementById('funnyAudioCounter');
+            const nextBtn = document.getElementById('funnyNextAudioBtn');
+            
+            nextBtn.style.display = 'none'; 
+            counter.innerText = `Послание ${index + 1} из ${funnyAudioFiles.length}`;
+            audio.src = funnyAudioFiles[index];
+            audio.load(); 
+            
+            audio.onended = function() {
+                if (index < funnyAudioFiles.length - 1) {
+                    nextBtn.style.display = 'inline-block';
+                } else {
+                    // ЗАБАВНАЯ КНОПКА 5 (внутри JS)
+                    nextBtn.innerText = '😅 Показать, что я пыталась всё исправить';
+                    nextBtn.style.background = '#ffc107';
+                    nextBtn.style.color = '#333';
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.onclick = function() {
+                        document.getElementById('funnyAudioSection').style.display = 'none';
+                        document.getElementById('glebTransition').style.display = 'block';
+                        document.getElementById('glebTransition').scrollIntoView({ behavior: 'smooth' });
+                        
+                        setTimeout(() => {
+                            document.getElementById('btnSeriousAudio').style.display = 'block';
+                            document.getElementById('btnSeriousAudio').scrollIntoView({ behavior: 'smooth' });
+                        }, 3500);
+                    };
+                }
+            };
+        }
+
+        function playNextFunnyAudio() {
+            currentFunnyIndex++;
+            loadFunnyAudio(currentFunnyIndex);
+        }
+
+        // --- 4. БЛОК СЕРЬЕЗНЫХ АУДИО ---
+        const seriousAudioFiles = [
+            'миша-гс.mp3', 'ярик-гс.mp3', 'полина з-гс.mp3', 'таня-гс.mp3', 'мээрим-гс.mp3', 'полина с-гс.mp3', 'аня-гс.mp3', 'глеб-гс.mp3'
+        ]; 
+        let currentSeriousIndex = 0;
+
+        function startSeriousAudio() {
+            document.getElementById('glebTransition').style.display = 'none'; 
+            document.getElementById('btnSeriousAudio').style.display = 'none';
+            document.getElementById('seriousAudioSection').style.display = 'block';
+            loadSeriousAudio(0);
+            document.getElementById('seriousAudioSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadSeriousAudio(index) {
+            const audio = document.getElementById('seriousCurrentAudio');
+            const counter = document.getElementById('seriousAudioCounter');
+            const nextBtn = document.getElementById('seriousNextAudioBtn');
+            
+            nextBtn.style.display = 'none'; 
+            counter.innerText = `Послание ${index + 1} из ${seriousAudioFiles.length}`;
+            audio.src = seriousAudioFiles[index];
+            audio.load(); 
+            
+            audio.onended = function() {
+                if (index < seriousAudioFiles.length - 1) {
+                    nextBtn.style.display = 'inline-block';
+                } else {
+                    // ЗАБАВНАЯ КНОПКА 6 (внутри JS)
+                    nextBtn.innerText = '🎬 Перейти к киношедевру группы 🍿';
+                    nextBtn.style.background = '#d32f2f';
+                    nextBtn.style.color = 'white';
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.onclick = function() {
+                        document.getElementById('seriousAudioSection').style.display = 'none';
+                        document.getElementById('btnVideo').style.display = 'block';
+                        document.getElementById('btnVideo').scrollIntoView({ behavior: 'smooth' });
+                    };
+                }
+            };
+        }
+
+        function playNextSeriousAudio() {
+            currentSeriousIndex++;
+            loadSeriousAudio(currentSeriousIndex);
+        }
+
+        // --- 5. ВИДЕО НА ПАМЯТЬ ---
+        function showVideo() {
+            document.getElementById('btnVideo').style.display = 'none';
+            document.getElementById('videoSection').style.display = 'block';
+            document.getElementById('videoSection').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

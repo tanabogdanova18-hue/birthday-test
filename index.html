@@ -153,15 +153,17 @@
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(211, 47, 47, 0.8);
             animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             margin-bottom: 20px; padding: 0 20px;
+            position: relative;
+            z-index: 2;
         }
         #fireworksCanvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
         }
     </style>
 </head>
 <body>
     
-    <h1>🎉 Тест для именинника! 🎉</h1>
+    <h1>🎉 Тест для молодого! 🎉</h1>
 
     <!-- 15 ВОПРОСОВ -->
     <div class="question">
@@ -279,7 +281,7 @@
         <div class="diploma-container" style="display:block;">
             <img src="диплом.png" alt="Диплом лучшего куратора">
         </div>
-        <button class="internal-next-btn" onclick="showStage('funnyAudioStage')">Продолжим🎭 ➡️</button>
+        <button class="internal-next-btn" onclick="showStage('funnyAudioStage')">Далее 🎭 ➡️</button>
     </div>
 
     <!-- БЛОК 2: ШУТОЧНЫЕ АУДИО -->
@@ -287,7 +289,7 @@
         <div class="audio-card funny">
             <div class="audio-counter" id="funnyAudioCounter">Послание 1 из 7</div>
             <audio id="funnyCurrentAudio" controls></audio>
-            <button class="next-audio-btn" id="funnyNextAudioBtn" onclick="playNextFunnyAudio()">Следующее голосовое ➡️</button>
+            <button class="next-audio-btn" id="funnyNextAudioBtn" onclick="playNextFunnyAudio()">Следующее послание ➡️</button>
         </div>
     </div>
 
@@ -302,10 +304,10 @@
                 Ваш браузер не поддерживает воспроизведение видео.
             </video>
         </div>
-        <div class="video-caption">Смотрите и улыбайтесь! С любовью, ваша группа! ❤️</div>
+        <div class="video-caption">Смотрите и улыбайтесь! С любовью, ваш курс! ❤️</div>
         
         <div style="margin-top: 30px;">
-            <p style="font-weight: bold; color: #555; margin-bottom: 10px;">👇 Проведите вправо, чтоб включить режим без хаоса</p>
+            <p style="font-weight: bold; color: #555; margin-bottom: 10px;">👇 Проведите вправо, чтобы перейти в режим "без хаоса"</p>
             <div class="swipe-container" id="swipeTrack">
                 <div class="swipe-text">Проведите для активации ➡️</div>
                 <div class="swipe-thumb" id="swipeThumb">💬</div>
@@ -318,7 +320,7 @@
         <div class="audio-card serious">
             <div class="audio-counter" id="seriousAudioCounter">Послание 1 из 9</div>
             <audio id="seriousCurrentAudio" controls></audio>
-            <button class="next-audio-btn" id="seriousNextAudioBtn" onclick="playNextSeriousAudio()">Далее ➡️</button>
+            <button class="next-audio-btn" id="seriousNextAudioBtn" onclick="playNextSeriousAudio()">Следующее послание ➡️</button>
         </div>
     </div>
 
@@ -388,7 +390,6 @@
         let seriousAudioStarted = false;
 
         function showStage(stageId) {
-            // Скрываем только главные внешние кнопки-триггеры
             document.querySelectorAll('.main-trigger-btn').forEach(btn => btn.style.display = 'none');
 
             const stage = document.getElementById(stageId);
@@ -397,7 +398,6 @@
                 stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
 
-            // Надежная инициализация аудио при первом открытии блока
             if (stageId === 'funnyAudioStage' && !funnyAudioStarted) {
                 funnyAudioStarted = true;
                 loadFunnyAudio(0);
@@ -424,7 +424,7 @@
             
             audio.onended = function() {
                 if (index < funnyAudioFiles.length - 1) {
-                    nextBtn.innerText = 'Следующее ➡️';
+                    nextBtn.innerText = 'Следующее голосовое ➡️';
                     nextBtn.style.background = '#28a745';
                     nextBtn.style.display = 'inline-block';
                 } else {
@@ -443,7 +443,7 @@
             loadFunnyAudio(currentFunnyIndex);
         }
 
-        // --- 5. СЛАЙДЕР (ПРОВЕСТИ) ---
+        // --- 5. СЛАЙДЕР ---
         const thumb = document.getElementById('swipeThumb');
         const track = document.getElementById('swipeTrack');
         let isDragging = false;
@@ -489,7 +489,7 @@
 
         // --- 6. СЕРЬЕЗНЫЕ АУДИО ---
         const seriousAudioFiles = [
-            'миша-гс.mp3', 'ярик-гс.mp3', 'мое-гс.mp3', 'полина з-гс.mp3', 'таня-гс.mp3', 'мээрим-гс.mp3', 'аня-гс.mp3', 'глеб-гс.mp3', 'полниа с-гс.mp3'
+            'миша-гс.mp3', 'ярик-гс.mp3', 'мое-гс.mp3', 'полина з-гс.mp3', 'таня-гс.mp3', 'мээрим-гс.mp3', 'полнина с-гс.mp3', 'аня-гс.mp3', 'глеб-гс.mp3'
         ]; 
         let currentSeriousIndex = 0;
 
@@ -532,13 +532,15 @@
             initFireworksText();
         }
 
+        // --- 8. ФЕЙЕРВЕРК, ВЫЛЕТАЮЩИЙ СНИЗУ И СОБИРАЮЩИЙСЯ В СЛОВО ---
         function initFireworksText() {
             const canvas = document.getElementById('fireworksCanvas');
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
 
-            const fontSize = Math.min(canvas.width / 5, 120);
+            // 1. Рисуем слово "МОЛОДОЙ" временно, чтобы получить координаты пикселей
+            const fontSize = Math.min(canvas.width / 6, canvas.height / 4, 110);
             ctx.font = `900 ${fontSize}px 'Segoe UI', sans-serif`;
             ctx.fillStyle = 'white';
             ctx.textAlign = 'center';
@@ -546,46 +548,112 @@
             ctx.fillText('МОЛОДОЙ', canvas.width / 2, canvas.height / 2);
 
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const particles = [];
-            const gap = 4;
+            const targetPoints = [];
+            const gap = 5;
 
             for (let y = 0; y < canvas.height; y += gap) {
                 for (let x = 0; x < canvas.width; x += gap) {
                     if (imageData.data[(y * canvas.width + x) * 4 + 3] > 128) {
-                        particles.push({
-                            targetX: x,
-                            targetY: y,
-                            x: canvas.width / 2 + (Math.random() - 0.5) * 100,
-                            y: canvas.height + Math.random() * 200,
-                            vx: (Math.random() - 0.5) * 15,
-                            vy: -(Math.random() * 15 + 10),
-                            color: `hsl(${Math.random() * 60 + 10}, 100%, ${50 + Math.random() * 30}%)`,
-                            ease: 0.04 + Math.random() * 0.04,
-                            size: Math.random() * 2 + 1
-                        });
+                        targetPoints.push({ x, y });
                     }
                 }
             }
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // Палитра настоящего фейерверка
+            const fireworkColors = [
+                '#ff1744', '#f50057', '#d500f9', '#651fff',
+                '#2979ff', '#00e5ff', '#00e676', '#ffea00',
+                '#ff9100', '#ffd700', '#ffffff', '#ff4081'
+            ];
+
+            // 2. Создаём частицы — каждая стартует СНИЗУ экрана
+            const particles = targetPoints.map((target, i) => {
+                const colorGroup = Math.floor(i / 40) % fireworkColors.length;
+                const color = fireworkColors[colorGroup];
+                
+                return {
+                    targetX: target.x,
+                    targetY: target.y,
+                    x: Math.random() * canvas.width,
+                    y: canvas.height + Math.random() * 100,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: -(Math.random() * 8 + 12),
+                    color: color,
+                    size: Math.random() * 2 + 1.5,
+                    delay: Math.random() * 60,
+                    phase: 0,
+                    trail: [],
+                    twinkle: Math.random() * Math.PI * 2
+                };
+            });
+
+            let frame = 0;
+
             function animate() {
-                ctx.fillStyle = 'rgba(26, 5, 5, 0.2)';
+                frame++;
+                
+                ctx.fillStyle = 'rgba(10, 2, 5, 0.18)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
                 particles.forEach(p => {
-                    p.vx += (p.targetX - p.x) * p.ease;
-                    p.vy += (p.targetY - p.y) * p.ease;
-                    p.vx *= 0.85;
-                    p.vy *= 0.85;
-                    p.x += p.vx;
-                    p.y += p.vy;
+                    if (frame < p.delay) return;
 
+                    p.trail.push({ x: p.x, y: p.y });
+                    if (p.trail.length > 6) p.trail.shift();
+
+                    if (p.phase === 0) {
+                        p.vy += 0.18;
+                        p.vx *= 0.99;
+                        p.x += p.vx;
+                        p.y += p.vy;
+
+                        if (p.vy > -2 || frame > p.delay + 80) {
+                            p.phase = 1;
+                        }
+                    } else {
+                        const dx = p.targetX - p.x;
+                        const dy = p.targetY - p.y;
+                        p.vx += dx * 0.035;
+                        p.vy += dy * 0.035;
+                        p.vx *= 0.88;
+                        p.vy *= 0.88;
+                        p.x += p.vx;
+                        p.y += p.vy;
+                    }
+
+                    p.trail.forEach((t, idx) => {
+                        const alpha = (idx / p.trail.length) * 0.4;
+                        ctx.fillStyle = p.color;
+                        ctx.globalAlpha = alpha;
+                        ctx.beginPath();
+                        ctx.arc(t.x, t.y, p.size * 0.6, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+
+                    p.twinkle += 0.15;
+                    const twinkleSize = p.size * (0.8 + Math.sin(p.twinkle) * 0.3);
+                    
+                    ctx.globalAlpha = 0.3;
                     ctx.fillStyle = p.color;
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.arc(p.x, p.y, twinkleSize * 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, twinkleSize, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, twinkleSize * 0.4, 0, Math.PI * 2);
                     ctx.fill();
                 });
+                
+                ctx.globalAlpha = 1;
                 requestAnimationFrame(animate);
             }
             animate();
